@@ -1,5 +1,13 @@
-# Faça um fork desse repositório
+# Digital Library
+Implementação de uma loja de livros virtual; desafio proposto pelo jornada Dev + Eficiente.
 
-Este é um repositório vazio de propósito. A ideia é que você faça um fork para que eu, Alberto, possa usar o github para ter a chance de olhar vários dos códigos produzido por você e seus(as) colegas da Jornada Dev Eficiente :). 
+## Histórias
+As histórias de usuário encontram-se na pasta [stories](stories).
 
-Durante cada uma das seis semanas eu vou pegar código por amostragem e analisar. Feito isso, vou criar um vídeo anonimizando a pessoa que é dona do código, com as minhas observações e postar isso como material de suporte da funcionalidade :). 
+## Stack
+O projeto foi escrito nas seguintes tecnologias:
+- Java 17, como linguagem de programação;
+- Spring Boot, como framework de servidor, injeção de dependências, persistência, etc.;
+- Junit, para testes unitários e de integração;
+- Testcontainers, para a realização de testes de integração com mais fidelidade;
+- Flyway, para versionamento de migrações.
