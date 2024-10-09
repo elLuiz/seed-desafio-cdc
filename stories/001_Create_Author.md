@@ -15,8 +15,6 @@ Para que, posteriormente, possa atribuir-lhe livros e então vendê-los.
     - Deverá ser um email válido.
 - Descrição
     - Campo de texto obrigatório, contendo no máximo 400 caracteres.
-- Data de criação
-    - Instante com a data de criação do autor.
 
 **RF 2:** Caso algum campo obrigatório não esteja preenchido ou esteja com um formato inválido,
 o sistema deverá retornar um erro informando quais campos contêm erros para que o usuário possa corrigi-los.
