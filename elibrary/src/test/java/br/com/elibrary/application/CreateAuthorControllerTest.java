@@ -1,8 +1,13 @@
 package br.com.elibrary.application;
 
 import br.com.elibrary.model.request.CreateAuthorRequest;
+import br.com.elibrary.utils.RandomStringGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
@@ -18,6 +23,9 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 @Testcontainers
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false, print = MockMvcPrint.LOG_DEBUG)
@@ -31,7 +39,10 @@ class CreateAuthorControllerTest {
 
     @DynamicPropertySource
     static void dbProperties(DynamicPropertyRegistry registry) {
-
+        System.setProperty("SHOW_SQL", "true");
+        registry.add("spring.datasource.url", () -> postgreSQLContainer.getJdbcUrl());
+        registry.add("spring.datasource.username", () -> postgreSQLContainer.getUsername());
+        registry.add("spring.datasource.password", () -> postgreSQLContainer.getPassword());
     }
 
     @Test
@@ -41,16 +52,84 @@ class CreateAuthorControllerTest {
         createAuthorRequest.setDescription("A SIMPLE, BUT EXPRESSIVE DESCRIPTION");
         createAuthorRequest.setEmail("et");
 
-        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/authors")
-                .header(HttpHeaders.ACCEPT_LANGUAGE, "en-US")
-                .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.ACCEPT, "application/json")
-                .content(objectMapper.writeValueAsBytes(createAuthorRequest)
-        ));
+        ResultActions actions = send(createAuthorRequest);
 
         actions.andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].code").value("invalid.email"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.occurredAt").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].field").value("email"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInvalidNames")
+    void shouldReturnErrorWhenNameIsInvalid(String name, String expectedErrorResponse) throws Exception {
+        CreateAuthorRequest createAuthorRequest = new CreateAuthorRequest();
+        createAuthorRequest.setName(name);
+        createAuthorRequest.setDescription("A SIMPLE DESCRIPTION");
+        createAuthorRequest.setEmail("email@email.com");
+
+        ResultActions actions = send(createAuthorRequest);
+
+        actions.andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].code").value(expectedErrorResponse))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.occurredAt").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].field").value("name"));
+    }
+
+    static Stream<Arguments> provideInvalidNames() {
+        return Stream.of(
+                Arguments.of(null, "name.must.not.be.null"),
+                Arguments.of("", "name.must.not.be.null"),
+                Arguments.of("  ", "name.must.not.be.null"),
+                Arguments.of(RandomStringGenerator.fill(256, "T"), "name.with.invalid.size")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInvalidDescription")
+    void shouldReturnErrorWhenDescriptionIsInvalid(String description, String expectedCode) throws Exception {
+        CreateAuthorRequest createAuthorRequest = new CreateAuthorRequest();
+        createAuthorRequest.setName("RANDOM NAME");
+        createAuthorRequest.setDescription(description);
+        createAuthorRequest.setEmail("email@email.com");
+
+        ResultActions actions = send(createAuthorRequest);
+
+        actions.andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].code").value(expectedCode))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.occurredAt").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].field").value("description"));
+    }
+
+    static Stream<Arguments> provideInvalidDescription() {
+        return Stream.of(
+                Arguments.of(null, "description.must.not.be.null"),
+                Arguments.of("", "description.must.not.be.null"),
+                Arguments.of("  ", "description.must.not.be.null"),
+                Arguments.of(RandomStringGenerator.fill(256, "TES"), "description.with.invalid.size")
+        );
+    }
+
+
+    @Test
+    void shouldSaveAuthor() throws Exception {
+        CreateAuthorRequest createAuthorRequest = new CreateAuthorRequest();
+        createAuthorRequest.setName("VALERIA");
+        createAuthorRequest.setEmail("test@gc.br");
+        createAuthorRequest.setDescription("Hallo! Ich bin Valeria, und Ich komme aus Deutschland. Freut mich!");
+
+        ResultActions actions = send(createAuthorRequest);
+
+        actions.andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.header().exists("Location"));
+    }
+
+    private ResultActions send(CreateAuthorRequest createAuthorRequest) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/authors")
+                .header(HttpHeaders.ACCEPT_LANGUAGE, "en-US")
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .header(HttpHeaders.ACCEPT, "application/json")
+                .content(objectMapper.writeValueAsBytes(createAuthorRequest)
+                ));
     }
 }

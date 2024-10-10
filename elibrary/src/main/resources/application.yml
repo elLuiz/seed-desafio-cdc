@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: elibrary
+  datasource:
+    url: ${DB_HOST}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driverClassName: org.postgresql.Driver
+    hikari:
+      connectionTimeout: 20000
+      maximumPoolSize: 250
+  jpa:
+    properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgresPlusDialect
+          default_schema: elibrary
+    hibernate:
+        ddl-auto: update
+    show-sql: ${SHOW_SQL:false}
+    open-in-view: false
+  flyway:
+    schemas: elibrary
+    baselineOnMigrate: true

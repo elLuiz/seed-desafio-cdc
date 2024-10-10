@@ -1,4 +1,3 @@
 package br.com.elibrary.application.dto.response;
 
-public class AuthorCreatedResponse {
-}
+public record AuthorCreatedResponse(Long id, String name) {}
