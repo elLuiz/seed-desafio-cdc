@@ -31,9 +31,9 @@ public class Author {
 
     // TODO: Adicionar validações
     public Author(String name, String email, String description) {
-        this.name = name;
-        this.email = email;
-        this.description = description;
+        this.name = name.trim();
+        this.email = email.trim();
+        this.description = description.trim();
         this.createdAt = LocalDateTime.now();
     }
 

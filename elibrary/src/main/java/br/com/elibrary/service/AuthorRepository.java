@@ -4,4 +4,6 @@ import br.com.elibrary.model.entity.Author;
 
 public interface AuthorRepository {
     void add(Author author);
+
+    boolean isUnique(String email);
 }

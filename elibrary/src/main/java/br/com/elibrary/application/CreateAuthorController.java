@@ -32,7 +32,7 @@ public class CreateAuthorController {
     public ResponseEntity<AuthorCreatedResponse> create(@RequestBody @Valid CreateAuthorRequest createAuthorRequest) {
         Author author = createAuthorRequest.convert();
         authorRepository.add(author);
-        return ResponseEntity.created(getLocation(author)).body(new AuthorCreatedResponse(author.getId(), author.getName()));
+        return ResponseEntity.created(getLocation(author)).body(AuthorCreatedResponse.convert(author));
     }
 
     private static URI getLocation(Author author) {
