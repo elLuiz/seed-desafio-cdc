@@ -1,4 +1,4 @@
-package br.com.elibrary.model.entity;
+package br.com.elibrary.model.author;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,21 +19,22 @@ public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "author_name", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "author_name", nullable = false)
     private String name;
-    @Column(name = "email", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "email", nullable = false)
     @Email
     private String email;
-    @Column(name = "description", columnDefinition = "varchar(400)", nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
-    @Column(name = "created_at", columnDefinition = "timestamp with time zone", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    // TODO: Adicionar validações
+    private Author() {}
+
     public Author(String name, String email, String description) {
-        this.name = name;
-        this.email = email;
-        this.description = description;
+        this.name = name.trim();
+        this.email = email.trim();
+        this.description = description.trim();
         this.createdAt = LocalDateTime.now();
     }
 

@@ -1,4 +1,4 @@
-package br.com.elibrary.application.dto.response;
+package br.com.elibrary.model.validation;
 
 import lombok.Getter;
 
@@ -7,11 +7,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-public class ErrorResponse {
+public class Error {
     private final LocalDateTime occurredAt;
     private final Set<FieldError> errors;
 
-    public ErrorResponse() {
+    public Error() {
         this.occurredAt = LocalDateTime.now();
         this.errors = new HashSet<>();
     }

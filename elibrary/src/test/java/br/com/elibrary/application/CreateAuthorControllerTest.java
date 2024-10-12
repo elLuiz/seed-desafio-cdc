@@ -1,9 +1,8 @@
 package br.com.elibrary.application;
 
-import br.com.elibrary.model.request.CreateAuthorRequest;
+import br.com.elibrary.application.dto.request.CreateAuthorRequest;
 import br.com.elibrary.utils.RandomStringGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -23,7 +22,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 @Testcontainers
@@ -121,7 +119,25 @@ class CreateAuthorControllerTest {
         ResultActions actions = send(createAuthorRequest);
 
         actions.andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.header().exists("Location"));
+                .andExpect(MockMvcResultMatchers.header().exists("Location"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("VALERIA"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.createdAt").isNotEmpty());
+    }
+
+    @Test
+    void shouldNotSaveAuthorWithDuplicateEmail() throws Exception {
+        CreateAuthorRequest createAuthorRequest = new CreateAuthorRequest();
+        createAuthorRequest.setName("SEB VETTEL");
+        createAuthorRequest.setEmail("test1@gc.br");
+        createAuthorRequest.setDescription("Hallo! Ich bin Vettel. Ich bin sehr gut.");
+
+        ResultActions actions = send(createAuthorRequest);
+        actions.andExpect(MockMvcResultMatchers.status().isCreated());
+        actions = send(createAuthorRequest);
+        actions.andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].code").value("email.already.taken"));
+
     }
 
     private ResultActions send(CreateAuthorRequest createAuthorRequest) throws Exception {

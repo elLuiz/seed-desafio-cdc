@@ -8,7 +8,7 @@ spring:
     driverClassName: org.postgresql.Driver
     hikari:
       connectionTimeout: 20000
-      maximumPoolSize: 250
+      maximumPoolSize: 10
   jpa:
     properties:
         hibernate:

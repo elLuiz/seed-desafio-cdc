@@ -1,6 +1,6 @@
 package br.com.elibrary.application;
 
-import br.com.elibrary.application.dto.response.ErrorResponse;
+import br.com.elibrary.model.validation.Error;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -15,19 +15,19 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        ErrorResponse error = toError(ex.getBindingResult());
+        Error error = toError(ex.getBindingResult());
         return super.handleExceptionInternal(ex, error, headers, status, request);
     }
 
-    ErrorResponse toError(BindingResult bindingResult) {
-        ErrorResponse errorResponse = new ErrorResponse();
+    Error toError(BindingResult bindingResult) {
+        Error error = new Error();
         if (bindingResult.hasErrors()) {
             bindingResult.getAllErrors()
                     .forEach(objectError -> {
                         var messageCode = objectError.getDefaultMessage();
-                        errorResponse.addError(((FieldError) objectError).getField(), messageCode, messageCode);
+                        error.addError(((FieldError) objectError).getField(), messageCode, messageCode);
                     });
         }
-        return errorResponse;
+        return error;
     }
 }
