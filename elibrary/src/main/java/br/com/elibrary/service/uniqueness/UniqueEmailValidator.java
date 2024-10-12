@@ -1,5 +1,6 @@
-package br.com.elibrary.application.validation;
+package br.com.elibrary.service.uniqueness;
 
+import br.com.elibrary.model.validation.UniqueEmail;
 import br.com.elibrary.service.AuthorRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

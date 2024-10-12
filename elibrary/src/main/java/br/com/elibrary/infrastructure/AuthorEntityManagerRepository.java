@@ -1,6 +1,6 @@
 package br.com.elibrary.infrastructure;
 
-import br.com.elibrary.model.entity.Author;
+import br.com.elibrary.model.author.Author;
 import br.com.elibrary.service.AuthorRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

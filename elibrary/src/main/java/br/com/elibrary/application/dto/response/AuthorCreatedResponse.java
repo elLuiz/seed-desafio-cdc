@@ -1,6 +1,6 @@
 package br.com.elibrary.application.dto.response;
 
-import br.com.elibrary.model.entity.Author;
+import br.com.elibrary.model.author.Author;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

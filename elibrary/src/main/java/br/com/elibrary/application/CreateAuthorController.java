@@ -1,9 +1,10 @@
 package br.com.elibrary.application;
 
 import br.com.elibrary.application.dto.response.AuthorCreatedResponse;
-import br.com.elibrary.model.entity.Author;
-import br.com.elibrary.model.request.CreateAuthorRequest;
+import br.com.elibrary.model.author.Author;
+import br.com.elibrary.application.dto.request.CreateAuthorRequest;
 import br.com.elibrary.service.AuthorRepository;
+import br.com.elibrary.util.log.StatefulRequestLogger;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -29,6 +30,7 @@ public class CreateAuthorController {
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     @Transactional
+    @StatefulRequestLogger(action = "Create Author")
     public ResponseEntity<AuthorCreatedResponse> create(@RequestBody @Valid CreateAuthorRequest createAuthorRequest) {
         Author author = createAuthorRequest.convert();
         authorRepository.add(author);

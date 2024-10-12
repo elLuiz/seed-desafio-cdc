@@ -1,4 +1,4 @@
-package br.com.elibrary.application.dto.response;
+package br.com.elibrary.model.validation;
 
 public record FieldError(String field, String description, String code) {
 }

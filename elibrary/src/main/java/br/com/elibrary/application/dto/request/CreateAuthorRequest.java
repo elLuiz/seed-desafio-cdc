@@ -1,7 +1,7 @@
-package br.com.elibrary.model.request;
+package br.com.elibrary.application.dto.request;
 
-import br.com.elibrary.application.validation.UniqueEmail;
-import br.com.elibrary.model.entity.Author;
+import br.com.elibrary.model.validation.UniqueEmail;
+import br.com.elibrary.model.author.Author;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,5 +25,10 @@ public class CreateAuthorRequest {
 
     public Author convert() {
         return new Author(this.name, this.email, this.description);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

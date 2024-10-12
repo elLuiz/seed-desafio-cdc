@@ -1,6 +1,6 @@
 package br.com.elibrary.application;
 
-import br.com.elibrary.model.request.CreateAuthorRequest;
+import br.com.elibrary.application.dto.request.CreateAuthorRequest;
 import br.com.elibrary.utils.RandomStringGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
