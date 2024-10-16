@@ -1,9 +1,9 @@
-package br.com.elibrary.application;
+package br.com.elibrary.application.author;
 
 import br.com.elibrary.application.dto.response.AuthorCreatedResponse;
 import br.com.elibrary.model.author.Author;
 import br.com.elibrary.application.dto.request.CreateAuthorRequest;
-import br.com.elibrary.service.AuthorRepository;
+import br.com.elibrary.service.author.AuthorRepository;
 import br.com.elibrary.util.log.StatefulRequestLogger;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

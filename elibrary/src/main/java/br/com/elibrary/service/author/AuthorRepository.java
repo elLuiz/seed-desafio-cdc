@@ -1,4 +1,4 @@
-package br.com.elibrary.service;
+package br.com.elibrary.service.author;
 
 import br.com.elibrary.model.author.Author;
 

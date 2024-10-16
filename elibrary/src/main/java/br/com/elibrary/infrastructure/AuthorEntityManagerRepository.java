@@ -1,7 +1,7 @@
 package br.com.elibrary.infrastructure;
 
 import br.com.elibrary.model.author.Author;
-import br.com.elibrary.service.AuthorRepository;
+import br.com.elibrary.service.author.AuthorRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;

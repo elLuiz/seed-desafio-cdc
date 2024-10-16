@@ -1,4 +1,4 @@
-package br.com.elibrary.application;
+package br.com.elibrary.application.author;
 
 import br.com.elibrary.application.dto.request.CreateAuthorRequest;
 import br.com.elibrary.utils.RandomStringGenerator;
@@ -33,7 +33,7 @@ class CreateAuthorControllerTest {
     @Autowired
     ObjectMapper objectMapper;
     @Container
-    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:14");
+    protected static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:14");
 
     @DynamicPropertySource
     static void dbProperties(DynamicPropertyRegistry registry) {
