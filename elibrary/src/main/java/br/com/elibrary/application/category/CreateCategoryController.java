@@ -2,6 +2,7 @@ package br.com.elibrary.application.category;
 
 import br.com.elibrary.application.dto.request.CreateCategoryRequest;
 import br.com.elibrary.application.dto.response.CategoryCreatedResponse;
+import br.com.elibrary.application.util.HttpHeaderUtil;
 import br.com.elibrary.model.category.Category;
 import br.com.elibrary.service.category.CategoryRepository;
 import br.com.elibrary.util.log.StatefulRequestLogger;
@@ -13,9 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
 
 @RequestMapping("/api/v1/categories")
 @RestController
@@ -32,14 +30,7 @@ public class CreateCategoryController {
     public ResponseEntity<CategoryCreatedResponse> create(@RequestBody @Valid CreateCategoryRequest createCategoryRequest) {
         Category category = createCategoryRequest.toModel();
         categoryRepository.add(category);
-        return ResponseEntity.created(getLocation(category)).body(CategoryCreatedResponse.convert(category));
-    }
-
-    // TODO: Refactor
-    private static URI getLocation(Category category) {
-        return ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(category.getId())
-                .toUri();
+        return ResponseEntity.created(HttpHeaderUtil.getLocationURI("/{id}", category.getId()))
+                .body(CategoryCreatedResponse.convert(category));
     }
 }

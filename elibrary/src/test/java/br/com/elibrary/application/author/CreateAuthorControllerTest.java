@@ -1,25 +1,19 @@
 package br.com.elibrary.application.author;
 
 import br.com.elibrary.application.dto.request.CreateAuthorRequest;
+import br.com.elibrary.application.util.RequestSender;
 import br.com.elibrary.utils.RandomStringGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.stream.Stream;
@@ -27,21 +21,7 @@ import java.util.stream.Stream;
 @Testcontainers
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false, print = MockMvcPrint.LOG_DEBUG)
-class CreateAuthorControllerTest {
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    ObjectMapper objectMapper;
-    @Container
-    protected static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:14");
-
-    @DynamicPropertySource
-    static void dbProperties(DynamicPropertyRegistry registry) {
-        System.setProperty("SHOW_SQL", "true");
-        registry.add("spring.datasource.url", () -> postgreSQLContainer.getJdbcUrl());
-        registry.add("spring.datasource.username", () -> postgreSQLContainer.getUsername());
-        registry.add("spring.datasource.password", () -> postgreSQLContainer.getPassword());
-    }
+class CreateAuthorControllerTest extends RequestSender {
 
     @Test
     void shouldReturnBadRequestWhenAuthorContainsInvalidEmail() throws Exception {

@@ -2,14 +2,13 @@ package br.com.elibrary.infrastructure;
 
 import br.com.elibrary.model.author.Author;
 import br.com.elibrary.service.author.AuthorRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 @Repository
-class AuthorEntityManagerRepository implements AuthorRepository {
-    @PersistenceContext
-    EntityManager entityManager;
+class AuthorEntityManagerRepository extends GenericRepository<Author, Long> implements AuthorRepository {
+    AuthorEntityManagerRepository() {
+        super(Author.class);
+    }
 
     @Override
     public void add(Author author) {
