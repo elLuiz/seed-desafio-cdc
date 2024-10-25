@@ -1,7 +1,6 @@
-package br.com.elibrary.service.uniqueness;
+package br.com.elibrary.service.author;
 
-import br.com.elibrary.model.validation.UniqueEmail;
-import br.com.elibrary.service.AuthorRepository;
+import br.com.elibrary.model.author.UniqueEmail;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.stereotype.Component;

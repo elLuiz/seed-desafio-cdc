@@ -5,6 +5,7 @@ CREATE SEQUENCE IF NOT EXISTS elibrary.seq_author_id
 
 CREATE TABLE IF NOT EXISTS elibrary.tb_author (
     id bigint PRIMARY KEY DEFAULT nextval('elibrary.seq_author_id'),
+    author_name varchar(255) NOT NULL,
     email varchar(255) NOT NULL,
     description varchar(400) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT current_timestamp,

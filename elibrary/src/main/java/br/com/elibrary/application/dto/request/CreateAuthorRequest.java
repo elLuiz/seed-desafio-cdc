@@ -1,6 +1,6 @@
 package br.com.elibrary.application.dto.request;
 
-import br.com.elibrary.model.validation.UniqueEmail;
+import br.com.elibrary.model.author.UniqueEmail;
 import br.com.elibrary.model.author.Author;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
