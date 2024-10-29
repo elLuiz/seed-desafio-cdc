@@ -3,6 +3,8 @@ package br.com.elibrary.infrastructure;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
+import java.util.Optional;
+
 /**
  * Represents basic operations performed in any repository throughout the system
  * @param <E> The type of the Entity
@@ -23,7 +25,7 @@ class GenericRepository<E, I> {
         }
     }
 
-    public void findById(I id) {
-        entityManager.find(type, id);
+    public Optional<E> findById(I id) {
+        return Optional.ofNullable(entityManager.find(type, id));
     }
 }

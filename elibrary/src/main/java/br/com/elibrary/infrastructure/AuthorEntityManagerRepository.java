@@ -22,4 +22,6 @@ class AuthorEntityManagerRepository extends GenericRepository<Author, Long> impl
                 .getSingleResult();
         return Boolean.TRUE.equals(result);
     }
+
+
 }

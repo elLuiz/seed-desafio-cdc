@@ -16,6 +16,11 @@ public class Error {
         this.errors = new HashSet<>();
     }
 
+    public Error(Set<FieldError> errors) {
+        this.occurredAt = LocalDateTime.now();
+        this.errors = errors;
+    }
+
     public void addError(String field, String description, String code) {
         this.errors.add(new FieldError(field, description, code));
     }
