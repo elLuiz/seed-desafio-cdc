@@ -1,10 +1,8 @@
 package br.com.elibrary.model.author;
 
+import br.com.elibrary.model.GenericEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import lombok.Getter;
@@ -15,10 +13,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "tb_author")
 @Getter
-public class Author {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Author extends GenericEntity {
     @Column(name = "author_name", nullable = false)
     private String name;
     @Column(name = "email", nullable = false)

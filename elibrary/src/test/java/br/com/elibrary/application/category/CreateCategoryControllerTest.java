@@ -1,6 +1,7 @@
 package br.com.elibrary.application.category;
 
 import br.com.elibrary.application.dto.request.CreateCategoryRequest;
+import br.com.elibrary.application.util.IntegrationTest;
 import br.com.elibrary.application.util.RequestSender;
 import br.com.elibrary.utils.RandomStringGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,20 +11,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.stream.Stream;
 
-@Testcontainers
-@SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
+@IntegrationTest
 class CreateCategoryControllerTest extends RequestSender {
 
     @DisplayName("Should create category when name is valid")

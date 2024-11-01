@@ -1,30 +1,24 @@
 package br.com.elibrary.model.category;
 
+import br.com.elibrary.model.GenericEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.util.Objects;
 
 @Entity
 @Table(name = "tb_category")
-public class Category {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Category extends GenericEntity {
     @Column(name = "category_name", columnDefinition = "varchar(120)")
     private String name;
 
-    public Category(String name) {
-        this.name = name;
+    @Deprecated(since = "2024")
+    protected Category() {
     }
 
-    public Long getId() {
-        return id;
+    public Category(String name) {
+        this.name = name;
     }
 
     public String getName() {

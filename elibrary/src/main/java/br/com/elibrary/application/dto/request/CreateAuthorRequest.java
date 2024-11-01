@@ -1,7 +1,7 @@
 package br.com.elibrary.application.dto.request;
 
-import br.com.elibrary.model.author.UniqueEmail;
 import br.com.elibrary.model.author.Author;
+import br.com.elibrary.model.validation.Unique;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +17,7 @@ public class CreateAuthorRequest {
     private String name;
     @NotNull(message = "email.must.not.be.null")
     @Email(message = "invalid.email")
-    @UniqueEmail
+    @Unique(field = "email", message = "email.already.taken", owner = Author.class)
     private String email;
     @NotBlank(message = "description.must.not.be.null")
     @Size(max = 400, message = "description.with.invalid.size")
