@@ -58,7 +58,7 @@ public class BookValidator implements Validator<BookBuilder> {
     private void validatePrice(BigDecimal price) {
         if (price == null) {
             addError("price", "price.not.null");
-        } else if (price.compareTo(BigDecimal.valueOf(20)) < 1) {
+        } else if (new Money(BigDecimal.valueOf(20)).greaterThan(new Money(price))) {
             addError("price", "price.must.not.be.lower.than.20");
         }
     }

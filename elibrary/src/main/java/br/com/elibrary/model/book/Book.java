@@ -1,6 +1,6 @@
 package br.com.elibrary.model.book;
 
-import br.com.elibrary.model.Money;
+import br.com.elibrary.model.GenericEntity;
 import br.com.elibrary.model.author.Author;
 import br.com.elibrary.model.category.Category;
 import br.com.elibrary.model.exception.DomainValidationException;
@@ -9,9 +9,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -23,21 +20,19 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "tb_book")
-public class Book {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(name = "title")
+@Getter
+public class Book extends GenericEntity {
+    @Column(name = "title", length = 200, nullable = false)
     private String title;
-    @Column(name = "summary")
+    @Column(name = "summary", length = 500, nullable = false)
     private String summary;
     @Column(name = "table_of_contents")
     private String tableOfContents;
     @Embedded
-    @AttributeOverride(name = "amount", column = @Column(name = "price"))
+    @AttributeOverride(name = "amount", column = @Column(name = "price", nullable = false))
     private Money price;
-    @Column(name = "num_of_pages")
-    private Integer numberOfPages;
+    @Column(name = "num_of_pages", nullable = false)
+    private Short numberOfPages;
     @Column(name = "isbn")
     private String isbn;
     @Column(name = "publish_at")
@@ -68,8 +63,9 @@ public class Book {
             this.publishAt = LocalDateTime.of(bookBuilder.publishAt, LocalTime.MIDNIGHT);
             this.category = bookBuilder.category;
             this.author = bookBuilder.author;
+        } else {
+            throw new DomainValidationException("bad.input.for.book", bookValidator.getError());
         }
-        throw new DomainValidationException("bad.input.for.book", bookValidator.getError());
     }
 
     @Getter
@@ -78,7 +74,7 @@ public class Book {
         private String summary;
         private String tableOfContents;
         private BigDecimal price;
-        private Integer numberOfPages;
+        private Short numberOfPages;
         private String isbn;
         private LocalDate publishAt;
         private Category category;
@@ -104,7 +100,7 @@ public class Book {
             return this;
         }
 
-        public BookBuilder pages(Integer numberOfPages) {
+        public BookBuilder pages(Short numberOfPages) {
             this.numberOfPages = numberOfPages;
             return this;
         }

@@ -1,5 +1,7 @@
 package br.com.elibrary.service.book.command;
 
+import br.com.elibrary.model.book.Book;
+import br.com.elibrary.model.validation.Unique;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,9 +27,10 @@ public class CreateBookCommand {
     @Min(value = 20, message = "price.must.not.be.lower.than.20")
     private BigDecimal price;
     @Min(value = 100, message = "pages.must.not.be.lower.than.100")
-    private int numberOfPages;
+    private short numberOfPages;
     @NotBlank(message = "isbn.not.empty")
     @Size(max = 50, message = "isbn.surpasses.allowed.size")
+    @Unique(field = "isbn", message = "isbn.already.registered", owner = Book.class)
     private String isbn;
     @NotNull(message = "publish.date.must.not.be.null")
     private LocalDate publishAt;

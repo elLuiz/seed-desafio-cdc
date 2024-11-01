@@ -6,10 +6,10 @@ import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, String> {
+public class UniqueEmailValidatorRepository implements ConstraintValidator<UniqueEmail, String> {
     private final AuthorRepository authorRepository;
 
-    public UniqueEmailValidator(AuthorRepository authorRepository) {
+    public UniqueEmailValidatorRepository(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
     }
 

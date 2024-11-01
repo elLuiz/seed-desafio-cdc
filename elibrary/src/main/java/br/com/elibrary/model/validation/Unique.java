@@ -1,6 +1,7 @@
-package br.com.elibrary.model.author;
+package br.com.elibrary.model.validation;
 
-import br.com.elibrary.service.author.UniqueEmailValidatorRepository;
+import br.com.elibrary.model.GenericEntity;
+import br.com.elibrary.infrastructure.GenericConstraintValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -11,9 +12,15 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-@Constraint(validatedBy = UniqueEmailValidatorRepository.class)
-public @interface UniqueEmail {
-    String message() default "email.already.taken";
+@Constraint(validatedBy = GenericConstraintValidator.class)
+public @interface Unique {
+    String field();
+
+    String message();
+
+    Class<? extends GenericEntity> owner();
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

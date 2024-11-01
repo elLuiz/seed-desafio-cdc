@@ -8,4 +8,5 @@ public interface AuthorRepository {
     void add(Author author);
     boolean isUnique(String email);
     Optional<Author> findById(Long id);
+    Optional<Author> findByEmail(String email);
 }

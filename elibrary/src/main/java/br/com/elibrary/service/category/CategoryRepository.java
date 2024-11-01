@@ -8,4 +8,5 @@ public interface CategoryRepository {
     void add(Category category);
     boolean containsName(String categoryName);
     Optional<Category> findById(Long id);
+    Optional<Category> findByName(String name);
 }

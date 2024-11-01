@@ -1,26 +1,21 @@
 package br.com.elibrary.application.author;
 
 import br.com.elibrary.application.dto.request.CreateAuthorRequest;
+import br.com.elibrary.application.util.IntegrationTest;
 import br.com.elibrary.application.util.RequestSender;
 import br.com.elibrary.utils.RandomStringGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.stream.Stream;
 
-@Testcontainers
-@SpringBootTest
-@AutoConfigureMockMvc(addFilters = false, print = MockMvcPrint.LOG_DEBUG)
+@IntegrationTest
 class CreateAuthorControllerTest extends RequestSender {
 
     @Test

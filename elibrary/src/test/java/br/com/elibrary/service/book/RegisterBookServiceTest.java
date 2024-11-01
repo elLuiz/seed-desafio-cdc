@@ -5,7 +5,7 @@ import br.com.elibrary.model.category.Category;
 import br.com.elibrary.service.author.AuthorRepository;
 import br.com.elibrary.service.book.command.CreateBookCommand;
 import br.com.elibrary.service.category.CategoryRepository;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,13 +51,13 @@ class RegisterBookServiceTest {
                 3 - Batch Processing
                 4 - Transactions
                 """);
-        createBookCommand.setNumberOfPages(750);
+        createBookCommand.setNumberOfPages((short) 750);
         createBookCommand.setPublishAt(LocalDate.now().plusDays(10));
         createBookCommand.setPrice(BigDecimal.valueOf(20.0));
         createBookCommand.setIsbn("023-92309320293");
         createBookCommand.setAuthorId(1L);
         createBookCommand.setCategoryId(1L);
 
-        Assert.assertNotNull(registerBookService.register(createBookCommand));
+        Assertions.assertNotNull(registerBookService.register(createBookCommand));
     }
 }

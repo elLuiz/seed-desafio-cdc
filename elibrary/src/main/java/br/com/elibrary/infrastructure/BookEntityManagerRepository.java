@@ -9,4 +9,5 @@ class BookEntityManagerRepository extends GenericRepository<Book, Long> implemen
     public BookEntityManagerRepository() {
         super(Book.class);
     }
+
 }

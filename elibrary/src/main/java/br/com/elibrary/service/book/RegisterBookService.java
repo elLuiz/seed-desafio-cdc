@@ -8,6 +8,7 @@ import br.com.elibrary.service.book.command.CreateBookCommand;
 import br.com.elibrary.service.category.CategoryRepository;
 import br.com.elibrary.service.exception.EntityNotFound;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RegisterBookService {
@@ -23,6 +24,7 @@ public class RegisterBookService {
         this.categoryRepository = categoryRepository;
     }
 
+    @Transactional
     public Book register(CreateBookCommand createBookCommand) {
         Author author = authorRepository.findById(createBookCommand.getAuthorId()).orElseThrow(() -> new EntityNotFound("author.not.found"));
         Category category = categoryRepository.findById(createBookCommand.getCategoryId()).orElseThrow(() -> new EntityNotFound("category.not.found"));
