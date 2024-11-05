@@ -5,15 +5,26 @@ import br.com.elibrary.application.util.RequestSender;
 import br.com.elibrary.service.author.AuthorRepository;
 import br.com.elibrary.service.book.command.CreateBookCommand;
 import br.com.elibrary.service.category.CategoryRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
 
 @IntegrationTest
 @Sql(scripts = {"/insert-authors-and-categories.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
@@ -23,24 +34,63 @@ class RegisterBookControllerTest extends RequestSender {
     @Autowired
     CategoryRepository categoryRepository;
 
+    @ParameterizedTest(name = "Book with invalid parameters should return 400 Bad Request")
+    @MethodSource("provideBooksWithInvalidArguments")
+    void shouldReturnBadRequestForBadFormedInput(CreateBookCommand createBookCommand, List<String> errorCodes) throws Exception {
+        sendJSON(getRequestBuilder(createBookCommand))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].code").value(containsInAnyOrder(errorCodes.toArray(new String[0]))));
+    }
+
+    static Stream<Arguments> provideBooksWithInvalidArguments() {
+        CreateBookCommand bookWithNullParameters = CreateBookCommand.builder()
+                .title("")
+                .summary(null)
+                .tableOfContents("   ")
+                .price(null)
+                .numberOfPages((short) -10)
+                .isbn(null)
+                .publishAt(null)
+                .categoryId(null)
+                .authorId(null)
+                .build();
+        CreateBookCommand bookContainingInvalidSizes = CreateBookCommand.builder()
+                .title("29".repeat(101))
+                .summary("50453".repeat(101))
+                .tableOfContents("29289")
+                .price(BigDecimal.valueOf(19.99))
+                .numberOfPages((short) 50)
+                .isbn("504".repeat(20))
+                .publishAt(LocalDate.now().minusDays(10))
+                .categoryId(102L)
+                .authorId(9238L)
+                .build();
+
+        return Stream.of(
+                Arguments.of(bookWithNullParameters, List.of("title.not.empty", "summary.not.empty", "table.of.contents.must.not.be.empty",
+                        "price.not.null", "pages.must.not.be.lower.than.100", "isbn.not.empty", "publish.date.must.not.be.null",
+                        "category.must.not.be.null", "author.must.not.be.null")),
+                Arguments.of(bookContainingInvalidSizes, List.of("title.surpasses.allowed.size", "summary.surpasses.allowed.size",
+                        "price.must.not.be.lower.than.20", "pages.must.not.be.lower.than.100", "isbn.surpasses.allowed.size",
+                        "publish.date.must.not.be.in.the.past")));
+    }
+
+    @DisplayName("Should create book")
     @Test
     void shouldCreateBook() throws Exception {
-        CreateBookCommand createBookCommand = new CreateBookCommand();
-        createBookCommand.setTitle("DESIGNING DATA INTENSIVE APPLICATIONS");
-        createBookCommand.setIsbn("1238293-230239230");
-        createBookCommand.setSummary("Wondering how to design a reliable and yet scalable system?");
-        createBookCommand.setTableOfContents("TOO MANY CONTENTS");
-        createBookCommand.setPublishAt(LocalDate.now().plusDays(2));
-        createBookCommand.setNumberOfPages((short) 750);
-        createBookCommand.setAuthorId(authorRepository.findByEmail("newman@ms.com").orElseThrow().getId());
-        createBookCommand.setPrice(BigDecimal.valueOf(20.0));
-        createBookCommand.setCategoryId(categoryRepository.findByName("SOFTWARE ENGINEERING").orElseThrow().getId());
+        CreateBookCommand createBookCommand = CreateBookCommand.builder()
+                .title("DESIGNING DATA INTENSIVE APPLICATIONS")
+                .isbn("1238293-230239230")
+                .summary("Wondering how to design a reliable and yet scalable system?")
+                .tableOfContents("TOO MANY CONTENTS")
+                .publishAt(LocalDate.now().plusDays(2))
+                .numberOfPages((short) 750)
+                .authorId(authorRepository.findByEmail("newman@ms.com").orElseThrow().getId())
+                .price(BigDecimal.valueOf(20.0))
+                .categoryId(categoryRepository.findByName("SOFTWARE ENGINEERING").orElseThrow().getId())
+                .build();
 
-        sendJSON(MockMvcRequestBuilders.post("/api/v1/books")
-                .content(objectMapper.writeValueAsBytes(createBookCommand))
-                .header(HttpHeaders.ACCEPT, "application/json")
-                .header(HttpHeaders.CONTENT_TYPE, "application/json;charset=utf-8")
-                .header(HttpHeaders.ACCEPT_LANGUAGE, "pt-BR")
+        sendJSON(getRequestBuilder(createBookCommand)
         )
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().exists("Location"))
@@ -49,32 +99,34 @@ class RegisterBookControllerTest extends RequestSender {
 
     }
 
+    @DisplayName("Should not create book with the same ISBN")
     @Test
     void shouldNotCreateBookWithSameIsbn() throws Exception {
-        CreateBookCommand createBookCommand = new CreateBookCommand();
-        createBookCommand.setTitle("DESIGNING DATA INTENSIVE APPLICATIONS");
-        createBookCommand.setIsbn("238293-230239230");
-        createBookCommand.setSummary("Wondering how to design a reliable and yet scalable system?");
-        createBookCommand.setTableOfContents("TOO MANY CONTENTS");
-        createBookCommand.setPublishAt(LocalDate.now().plusDays(2));
-        createBookCommand.setNumberOfPages((short) 750);
-        createBookCommand.setAuthorId(authorRepository.findByEmail("newman@ms.com").orElseThrow().getId());
-        createBookCommand.setPrice(BigDecimal.valueOf(20.0));
-        createBookCommand.setCategoryId(categoryRepository.findByName("SOFTWARE ENGINEERING").orElseThrow().getId());
+        CreateBookCommand createBookCommand = CreateBookCommand.builder()
+            .title("DESIGNING DATA INTENSIVE APPLICATIONS")
+            .isbn("238293-230239230")
+            .summary("Wondering how to design a reliable and yet scalable system?")
+            .tableOfContents("TOO MANY CONTENTS")
+            .publishAt(LocalDate.now().plusDays(2))
+            .numberOfPages((short) 750)
+            .authorId(authorRepository.findByEmail("newman@ms.com").orElseThrow().getId())
+            .price(BigDecimal.valueOf(20.0))
+            .categoryId(categoryRepository.findByName("SOFTWARE ENGINEERING").orElseThrow().getId())
+            .build();
 
-        sendJSON(MockMvcRequestBuilders.post("/api/v1/books")
-                .content(objectMapper.writeValueAsBytes(createBookCommand))
-                .header(HttpHeaders.ACCEPT, "application/json")
-                .header(HttpHeaders.CONTENT_TYPE, "application/json;charset=utf-8")
-                .header(HttpHeaders.ACCEPT_LANGUAGE, "pt-BR")
+        sendJSON(getRequestBuilder(createBookCommand)
         ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-        sendJSON(MockMvcRequestBuilders.post("/api/v1/books")
+        sendJSON(getRequestBuilder(createBookCommand)
+        ).andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].code").value("isbn.already.registered"));
+    }
+
+    private @NotNull MockHttpServletRequestBuilder getRequestBuilder(CreateBookCommand createBookCommand) throws JsonProcessingException {
+        return MockMvcRequestBuilders.post("/api/v1/books")
                 .content(objectMapper.writeValueAsBytes(createBookCommand))
                 .header(HttpHeaders.ACCEPT, "application/json")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json;charset=utf-8")
-                .header(HttpHeaders.ACCEPT_LANGUAGE, "pt-BR")
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].code").value("isbn.already.registered"));
+                .header(HttpHeaders.ACCEPT_LANGUAGE, "pt-BR");
     }
 }

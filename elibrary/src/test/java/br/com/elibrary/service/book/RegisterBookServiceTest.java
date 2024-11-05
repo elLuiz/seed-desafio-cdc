@@ -42,22 +42,22 @@ class RegisterBookServiceTest {
                 .thenReturn(Optional.of(category));
 
         Mockito.doNothing().when(repository).add(Mockito.any());
-        CreateBookCommand createBookCommand = new CreateBookCommand();
-        createBookCommand.setTitle("Designing Data Intensive applications");
-        createBookCommand.setSummary("Do you want to build scalable and reliable software? This book is for you.");
-        createBookCommand.setTableOfContents("""
+        CreateBookCommand createBookCommand = CreateBookCommand.builder()
+                .title("Designing Data Intensive applications")
+                .summary("Do you want to build scalable and reliable software? This book is for you.")
+                .tableOfContents("""
                 1 - The quality of the software
                 2 - Consensus
                 3 - Batch Processing
                 4 - Transactions
-                """);
-        createBookCommand.setNumberOfPages((short) 750);
-        createBookCommand.setPublishAt(LocalDate.now().plusDays(10));
-        createBookCommand.setPrice(BigDecimal.valueOf(20.0));
-        createBookCommand.setIsbn("023-92309320293");
-        createBookCommand.setAuthorId(1L);
-        createBookCommand.setCategoryId(1L);
-
+                """)
+                .numberOfPages((short) 750)
+                .publishAt(LocalDate.now().plusDays(10))
+                .price(BigDecimal.valueOf(20.0))
+                .isbn("023-92309320293")
+                .authorId(1L)
+                .categoryId(1L)
+            .build();
         Assertions.assertNotNull(registerBookService.register(createBookCommand));
     }
 }

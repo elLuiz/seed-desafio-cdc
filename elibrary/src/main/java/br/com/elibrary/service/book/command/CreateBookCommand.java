@@ -1,11 +1,13 @@
 package br.com.elibrary.service.book.command;
 
 import br.com.elibrary.model.book.Book;
+import br.com.elibrary.model.validation.NotInThePast;
 import br.com.elibrary.model.validation.Unique;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +16,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+@Builder(toBuilder = true)
 public class CreateBookCommand {
     @NotBlank(message = "title.not.empty")
     @Size(max = 200, message = "title.surpasses.allowed.size")
@@ -32,10 +35,13 @@ public class CreateBookCommand {
     @Size(max = 50, message = "isbn.surpasses.allowed.size")
     @Unique(field = "isbn", message = "isbn.already.registered", owner = Book.class)
     private String isbn;
+    @NotInThePast(message = "publish.date.must.not.be.in.the.past")
     @NotNull(message = "publish.date.must.not.be.null")
     private LocalDate publishAt;
     @NotNull(message = "category.must.not.be.null")
     private Long categoryId;
     @NotNull(message = "author.must.not.be.null")
     private Long authorId;
+
+
 }

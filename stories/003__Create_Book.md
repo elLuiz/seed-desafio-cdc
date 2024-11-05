@@ -35,6 +35,6 @@ deve retornar uma mensagem de erro clara e informativa.
 
 **RNF 3:** Erros de _constraint_ devem ser retornados sob o status `409 Conflict`.
 
-**RNF 4:** Caso o dado informado não exista no banco de dados, o servidor deverá retornar o status `404 Not Found`.
+**RNF 4:** Caso o dado informado não exista no banco de dados, o servidor deve retornar o status `404 Not Found`.
 
 **RNF 5:** As informações de autor e categoria deverão ser passados por meio de inteiros, representando o ID das entidades no banco de dados.
