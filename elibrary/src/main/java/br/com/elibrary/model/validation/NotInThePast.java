@@ -1,6 +1,5 @@
-package br.com.elibrary.model.author;
+package br.com.elibrary.model.validation;
 
-import br.com.elibrary.service.author.UniqueEmailValidatorRepository;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -9,11 +8,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+@Constraint(validatedBy = LocalDateNotInPastValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-@Constraint(validatedBy = UniqueEmailValidatorRepository.class)
-public @interface UniqueEmail {
-    String message() default "email.already.taken";
+public @interface NotInThePast {
+    String message();
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
