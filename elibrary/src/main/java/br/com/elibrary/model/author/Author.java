@@ -24,7 +24,7 @@ public class Author extends GenericEntity {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    private Author() {}
+    protected Author() {}
 
     public Author(String name, String email, String description) {
         this.name = name.trim();

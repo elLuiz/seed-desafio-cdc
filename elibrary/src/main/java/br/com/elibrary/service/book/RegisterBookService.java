@@ -26,8 +26,8 @@ public class RegisterBookService {
 
     @Transactional
     public Book register(CreateBookCommand createBookCommand) {
-        Author author = authorRepository.findById(createBookCommand.getAuthorId()).orElseThrow(() -> new EntityNotFound("author.not.found"));
-        Category category = categoryRepository.findById(createBookCommand.getCategoryId()).orElseThrow(() -> new EntityNotFound("category.not.found"));
+        Author author = authorRepository.findById(createBookCommand.getAuthorId()).orElseThrow(() -> new EntityNotFound("author.not.found", Author.class));
+        Category category = categoryRepository.findById(createBookCommand.getCategoryId()).orElseThrow(() -> new EntityNotFound("category.not.found", Author.class));
         Book book = Book.builder()
                 .title(createBookCommand.getTitle())
                 .summary(createBookCommand.getSummary())
