@@ -42,6 +42,12 @@ public class Book extends GenericEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Author author;
 
+    /**
+     * @deprecated Deprecated in order to avoid accidental usages of this constructor.
+     */
+    @Deprecated(since = "2024")
+    protected Book() {}
+
     public static BookBuilder builder() {
         return new BookBuilder();
     }

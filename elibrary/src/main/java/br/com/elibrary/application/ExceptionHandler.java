@@ -1,6 +1,7 @@
 package br.com.elibrary.application;
 
 import br.com.elibrary.model.validation.Error;
+import br.com.elibrary.service.exception.EntityNotFound;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -29,5 +30,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
                     });
         }
         return error;
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(EntityNotFound.class)
+    protected ResponseEntity<Error> handle(EntityNotFound entityNotFound) {
+        Error error = new Error();
+        error.addError(entityNotFound.getEntity(), entityNotFound.getMessage(), entityNotFound.getMessage());
+        return ResponseEntity.status(HttpStatusCode.valueOf(404)).body(error);
     }
 }

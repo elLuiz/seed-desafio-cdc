@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -27,12 +28,65 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 @IntegrationTest
-@Sql(scripts = {"/insert-authors-and-categories.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@SqlGroup(value = {
+        @Sql(scripts = {"/insert-authors-and-categories.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS),
+        @Sql(scripts = "/truncate-schema.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
+})
 class RegisterBookControllerTest extends RequestSender {
     @Autowired
     AuthorRepository authorRepository;
     @Autowired
     CategoryRepository categoryRepository;
+
+    @ParameterizedTest(name = "Should not create book with unknown author")
+    @MethodSource("provideBookWithUnregisteredEntities")
+    void shouldReturnNotFoundWhenEntityDoesNotExist(CreateBookCommand createBookCommand, String expectedErrorCode) throws Exception {
+        sendJSON(getRequestBuilder(createBookCommand))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].code").value(expectedErrorCode));
+    }
+
+    static Stream<Arguments> provideBookWithUnregisteredEntities() {
+        CreateBookCommand bookWithUnregisteredAuthor = CreateBookCommand.builder()
+                .tableOfContents("""
+                        CHAPTER 1
+                        CHAPTER 2
+                        CHAPTER 3
+                        CHAPTER 4
+                        CHAPTER 5
+                        """)
+                .numberOfPages((short) 150)
+                .summary("A great book discussing the set of trade offs involved while designing and developing distributed applications")
+                .categoryId(1L)
+                .publishAt(LocalDate.now().plusDays(23))
+                .title("DDIA")
+                .isbn("209-2939485")
+                .price(BigDecimal.valueOf(40.50))
+                .authorId(1039L)
+            .build();
+        CreateBookCommand bookWithUnregisteredCategory = CreateBookCommand.builder()
+                .tableOfContents("""
+                        CHAPTER 1
+                        CHAPTER 2
+                        CHAPTER 3
+                        CHAPTER 4
+                        CHAPTER 5
+                        """)
+                .numberOfPages((short) 150)
+                .summary("A great book discussing the set of trade offs involved while designing and developing distributed applications")
+                .categoryId(1L)
+                .publishAt(LocalDate.now().plusDays(23))
+                .title("DDIA")
+                .isbn("209-2939485")
+                .price(BigDecimal.valueOf(40.50))
+                .authorId(1L)
+                .categoryId(10209L)
+                .build();
+        return Stream.of(
+                Arguments.of(bookWithUnregisteredAuthor, "author.not.found"),
+                Arguments.of(bookWithUnregisteredCategory, "category.not.found")
+        );
+    }
 
     @ParameterizedTest(name = "Book with invalid parameters should return 400 Bad Request")
     @MethodSource("provideBooksWithInvalidArguments")
