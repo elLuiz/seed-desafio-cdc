@@ -1,5 +1,6 @@
 package br.com.elibrary.model.validation;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -7,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Error {
     private final LocalDateTime occurredAt;
     private final Set<FieldError> errors;
