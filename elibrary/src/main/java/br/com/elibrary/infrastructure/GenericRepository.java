@@ -25,6 +25,12 @@ class GenericRepository<E, I> {
         }
     }
 
+    public void update(E entity) {
+        if (entity != null) {
+            entityManager.merge(entity);
+        }
+    }
+
     public Optional<E> findById(I id) {
         return Optional.ofNullable(entityManager.find(type, id));
     }
