@@ -1,6 +1,6 @@
 package br.com.elibrary.application.book;
 
-import br.com.elibrary.application.dto.response.BookCreatedResponse;
+import br.com.elibrary.application.dto.response.book.BookCreatedResponse;
 import br.com.elibrary.application.util.HttpHeaderUtil;
 import br.com.elibrary.model.book.Book;
 import br.com.elibrary.service.book.RegisterBookService;

@@ -1,7 +1,7 @@
 package br.com.elibrary.application.category;
 
 import br.com.elibrary.application.dto.request.CreateCategoryRequest;
-import br.com.elibrary.application.dto.response.CategoryCreatedResponse;
+import br.com.elibrary.application.dto.response.category.CategoryCreatedResponse;
 import br.com.elibrary.application.util.HttpHeaderUtil;
 import br.com.elibrary.model.category.Category;
 import br.com.elibrary.service.category.CategoryRepository;

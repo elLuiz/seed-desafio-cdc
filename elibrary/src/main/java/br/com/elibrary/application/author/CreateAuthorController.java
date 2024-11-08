@@ -1,7 +1,7 @@
 package br.com.elibrary.application.author;
 
 import br.com.elibrary.application.dto.request.CreateAuthorRequest;
-import br.com.elibrary.application.dto.response.AuthorCreatedResponse;
+import br.com.elibrary.application.dto.response.author.AuthorCreatedResponse;
 import br.com.elibrary.application.util.HttpHeaderUtil;
 import br.com.elibrary.model.author.Author;
 import br.com.elibrary.service.author.AuthorRepository;

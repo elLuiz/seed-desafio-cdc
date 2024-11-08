@@ -1,8 +1,8 @@
 package br.com.elibrary.application.country;
 
 import br.com.elibrary.application.dto.request.CreateCountryRequest;
-import br.com.elibrary.application.dto.response.CountryCreatedResponse;
-import br.com.elibrary.application.dto.response.CreateStateRequest;
+import br.com.elibrary.application.dto.response.country.CountryCreatedResponse;
+import br.com.elibrary.application.dto.response.country.CreateStateRequest;
 import br.com.elibrary.application.util.HttpHeaderUtil;
 import br.com.elibrary.model.country.Country;
 import br.com.elibrary.model.country.State;
