@@ -14,6 +14,9 @@ spring:
         hibernate:
           dialect: org.hibernate.dialect.PostgresPlusDialect
           default_schema: elibrary
+          jdbc_batch_size: 100
+          order_inserts: true
+          order_updates: true
     hibernate:
         ddl-auto: none
     show-sql: ${SHOW_SQL:false}

@@ -13,6 +13,16 @@ class CountryEntityManagerRepository extends GenericRepository<Country, Long> im
     }
 
     @Override
+    public Optional<Country> findById(Long id) {
+        Country country = entityManager.createQuery("SELECT country FROM Country country " +
+                "LEFT JOIN FETCH country.states " +
+                "WHERE country.id = :countryId", Country.class)
+                .setParameter("countryId", id)
+                .getSingleResult();
+        return Optional.ofNullable(country);
+    }
+
+    @Override
     public Optional<Country> findByName(String name) {
         Country country = entityManager.createQuery("SELECT country FROM Country country " +
                         "LEFT JOIN FETCH country.states " +

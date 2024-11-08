@@ -5,8 +5,10 @@ import br.com.elibrary.application.dto.response.CreateStateRequest;
 import br.com.elibrary.application.util.IntegrationTest;
 import br.com.elibrary.application.util.RequestSender;
 import br.com.elibrary.model.country.Country;
+import br.com.elibrary.model.country.State;
 import br.com.elibrary.service.country.CountryRepository;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +21,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -100,5 +101,8 @@ class RegisterCountryControllerTest extends RequestSender {
                 .content(objectMapper.writeValueAsBytes(createStateRequest)))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
                 .andDo(MockMvcResultHandlers.print());
+        country = countryRepository.findById(country.getId()).orElse(null);
+        Assertions.assertNotNull(country);
+        Assertions.assertEquals(Set.of(new State("Baden-Württemberg"), new State("Bavaria"), new State("Berlin"), new State("Brandenburg")), country.getStates());
     }
 }

@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 
 import java.util.HashSet;
@@ -22,6 +23,7 @@ public class Country extends GenericEntity {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "tb_state", joinColumns = {@JoinColumn(name = "fk_country_id", foreignKey = @ForeignKey(name = "fk_country_id"))})
+    @OrderColumn
     private Set<State> states;
 
     protected Country() {}
