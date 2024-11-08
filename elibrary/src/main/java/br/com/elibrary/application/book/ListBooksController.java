@@ -1,7 +1,7 @@
 package br.com.elibrary.application.book;
 
 import br.com.elibrary.application.dto.list.ListResponse;
-import br.com.elibrary.application.dto.response.BookResponse;
+import br.com.elibrary.application.dto.response.book.BookResponse;
 import br.com.elibrary.model.book.Book;
 import br.com.elibrary.service.book.BookRepository;
 import org.springframework.http.MediaType;

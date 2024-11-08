@@ -1,4 +1,4 @@
-package br.com.elibrary.application.dto.response;
+package br.com.elibrary.application.dto.response.country;
 
 import br.com.elibrary.model.country.State;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package br.com.elibrary.application.dto.response;
+package br.com.elibrary.application.dto.response.author;
 
 import br.com.elibrary.model.author.Author;
 

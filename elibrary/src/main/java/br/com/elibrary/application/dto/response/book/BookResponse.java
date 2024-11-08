@@ -1,4 +1,4 @@
-package br.com.elibrary.application.dto.response;
+package br.com.elibrary.application.dto.response.book;
 
 import br.com.elibrary.model.book.Book;
 import lombok.Getter;

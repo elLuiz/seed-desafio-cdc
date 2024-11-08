@@ -1,6 +1,6 @@
 package br.com.elibrary.application.book;
 
-import br.com.elibrary.application.dto.response.BookDetailsResponse;
+import br.com.elibrary.application.dto.response.book.BookDetailsResponse;
 import br.com.elibrary.model.book.Book;
 import br.com.elibrary.service.book.BookRepository;
 import br.com.elibrary.service.exception.EntityNotFound;

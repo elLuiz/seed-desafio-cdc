@@ -1,5 +1,6 @@
-package br.com.elibrary.application.dto.response;
+package br.com.elibrary.application.dto.response.book;
 
+import br.com.elibrary.application.dto.response.author.AuthorDetails;
 import br.com.elibrary.model.book.Book;
 import br.com.elibrary.model.book.Money;
 import lombok.Getter;

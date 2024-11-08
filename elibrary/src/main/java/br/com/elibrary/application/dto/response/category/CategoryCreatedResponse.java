@@ -1,4 +1,4 @@
-package br.com.elibrary.application.dto.response;
+package br.com.elibrary.application.dto.response.category;
 
 import br.com.elibrary.model.category.Category;
 import lombok.Getter;
