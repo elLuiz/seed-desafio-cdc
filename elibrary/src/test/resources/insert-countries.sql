@@ -1,0 +1,2 @@
+INSERT INTO elibrary.tb_country(name)
+VALUES ('SWITZERLAND'), ('BOSNIA'), ('ECUADOR'), ('ARGENTINA'), ('DEUTSCHLAND');

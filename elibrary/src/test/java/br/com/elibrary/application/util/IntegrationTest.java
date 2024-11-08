@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Testcontainers
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false, print = MockMvcPrint.LOG_DEBUG)
+@AutoConfigureMockMvc(addFilters = false, print = MockMvcPrint.DEFAULT)
 @DirtiesContext
 public @interface IntegrationTest {
 }
