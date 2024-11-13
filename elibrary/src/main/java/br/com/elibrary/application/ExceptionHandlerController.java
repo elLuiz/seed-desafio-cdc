@@ -1,5 +1,6 @@
 package br.com.elibrary.application;
 
+import br.com.elibrary.model.exception.DomainException;
 import br.com.elibrary.model.validation.Error;
 import br.com.elibrary.service.exception.EntityNotFound;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -48,5 +49,13 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         Error body = new Error();
         body.addError(null, "entity.not.found", "entity.not.found");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(value = DomainException.class)
+    protected ResponseEntity<Error> handleDomainException(DomainException domainException) {
+        logger.warn("Domain exception", domainException);
+        Error error = new Error();
+        error.addError(null, domainException.getMessage(), domainException.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 }

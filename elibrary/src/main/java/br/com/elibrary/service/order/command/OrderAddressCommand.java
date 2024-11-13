@@ -1,10 +1,10 @@
-package br.com.elibrary.application.dto.request;
+package br.com.elibrary.service.order.command;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record OrderAddressRequest(
+public record OrderAddressCommand(
     @NotBlank(message = "address.must.not.be.empty")
     @Size(max = 200, message = "address.surpasses.max.size") String address,
     @NotBlank(message = "complement.must.not.be.empty")
