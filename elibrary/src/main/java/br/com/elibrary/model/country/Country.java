@@ -13,7 +13,9 @@ import jakarta.persistence.Table;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 @Table(name = "tb_country")
 @Entity
@@ -45,6 +47,32 @@ public class Country extends GenericEntity {
 
     public String getName() {
         return name;
+    }
+
+    /**
+     * <pre>Returns the state object by filtering the registered states by name.</pre>
+     * <pre>If the country does not have any state, an empty optional is returned.</pre>
+     * <pre>Otherwise, an exception is thrown (i.e., the given state name does not exist and the country has at least one state)</pre>
+     * @param stateName The state name.
+     * @param throwableSupplier The supplier with the exception to be thrown if the precondition is not met.
+     * @return The optional with the state, or empty if the country does not have any state.
+     * @param <X> The type of the exception to be thrown.
+     */
+    public <X extends RuntimeException> Optional<State> getStateOrElse(String stateName, Supplier<X> throwableSupplier) {
+        if (this.contains(stateName)) {
+            return states.stream().filter(state -> state.equals(new State(stateName))).findFirst();
+        } else if (!hasAnyState()) {
+            return Optional.empty();
+        }
+        throw throwableSupplier.get();
+    }
+
+    boolean contains(String stateName) {
+        return hasAnyState() && this.states.contains(new State(stateName));
+    }
+
+    boolean hasAnyState() {
+        return this.states != null && !this.states.isEmpty();
     }
 
     @Override
