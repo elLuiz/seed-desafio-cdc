@@ -54,7 +54,7 @@ public class Order extends GenericEntity {
         }
 
         public OrderBuilder document(String document) {
-            order.document = new Document();
+            order.document = Document.create(document);
             return this;
         }
 
@@ -63,8 +63,8 @@ public class Order extends GenericEntity {
             return this;
         }
 
-        public OrderBuilder cellPhone(String code, String phoneNumber) {
-            order.cellphone = new Cellphone();
+        public OrderBuilder cellPhone(Integer code, String phoneNumber) {
+            order.cellphone = new Cellphone(code, phoneNumber);
             return this;
         }
 
@@ -72,4 +72,6 @@ public class Order extends GenericEntity {
             return this.order;
         }
     }
+
+
 }

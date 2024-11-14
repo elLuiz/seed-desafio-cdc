@@ -56,10 +56,10 @@ class RegisterOrderControllerTest extends RequestSender {
     }
 
     static Stream<Arguments> provideOrderWithInvalidAddress() {
-        RegisterOrderCommand orderWithEmptyAddressFields = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", new OrderAddressCommand("", "", "", null, null, ""), new CellPhoneCommand("023", "290393842"));
+        RegisterOrderCommand orderWithEmptyAddressFields = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", new OrderAddressCommand("", "", "", null, null, ""), new CellPhoneCommand(23, "290393842"));
         Arguments argumentsForEmptyFields = Arguments.of(orderWithEmptyAddressFields, List.of("address.must.not.be.empty", "complement.must.not.be.empty", "city.must.not.be.empty", "zip.code.must.not.be.empty", "country.must.not.be.null"));
 
-        RegisterOrderCommand orderWithFieldViolations = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", new OrderAddressCommand("12".repeat(102), "234".repeat(101), "323".repeat(151), "1".repeat(21), 1L, "123".repeat(51)), new CellPhoneCommand("023", "290393842"));
+        RegisterOrderCommand orderWithFieldViolations = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", new OrderAddressCommand("12".repeat(102), "234".repeat(101), "323".repeat(151), "1".repeat(21), 1L, "123".repeat(51)), new CellPhoneCommand(23, "290393842"));
         Arguments argumentsForFieldViolations =  Arguments.of(orderWithFieldViolations, List.of("address.surpasses.max.size", "complement.surpasses.max.size", "city.surpasses.max.size", "zip.code.surpasses.max.size", "state.surpasses.max.size"));
 
         return Stream.of(
@@ -70,11 +70,11 @@ class RegisterOrderControllerTest extends RequestSender {
 
     static Stream<Arguments> provideOrderWithInvalidPhoneNumber() {
         OrderAddressCommand address = new OrderAddressCommand("R. Monaco", "NONE", "Monte Carlo", "29303930", 1L, "MC");
-        RegisterOrderCommand orderWithEmptyCellphone = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, new CellPhoneCommand("", ""));
-        Arguments argumentForEmptyCellphone = Arguments.of(orderWithEmptyCellphone, List.of("code.must.not.be.empty", "code.with.invalid.format", "phone.number.must.not.be.null", "phone.with.invalid.format"));
+        RegisterOrderCommand orderWithEmptyCellphone = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, new CellPhoneCommand(null, ""));
+        Arguments argumentForEmptyCellphone = Arguments.of(orderWithEmptyCellphone, List.of("code.must.not.be.null", "phone.number.must.not.be.null", "phone.with.invalid.format"));
 
-        RegisterOrderCommand orderWithInvalidPhone = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, new CellPhoneCommand("2322", "43432a2"));
-        Arguments argumentForInvalidCellphone = Arguments.of(orderWithInvalidPhone, List.of("code.with.invalid.format", "phone.with.invalid.format"));
+        RegisterOrderCommand orderWithInvalidPhone = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, new CellPhoneCommand(2322, "43432a2"));
+        Arguments argumentForInvalidCellphone = Arguments.of(orderWithInvalidPhone, List.of("code.with.invalid.range", "phone.with.invalid.format"));
 
         return Stream.of(
                 argumentForEmptyCellphone,
@@ -85,7 +85,7 @@ class RegisterOrderControllerTest extends RequestSender {
     @Test
     void shouldNotRegisterOrderWhenStateDoesNotBelongToCountry() throws Exception {
         OrderAddressCommand address = new OrderAddressCommand("R. Monaco", "NONE", "Monte Carlo", "29303930", countryRepository.findByName("deutschland").map(GenericEntity::getId).orElse(null), "Rio de Janeiro");
-        CellPhoneCommand cellphone = new CellPhoneCommand("034", "23348575");
+        CellPhoneCommand cellphone = new CellPhoneCommand(34, "23348575");
         RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone);
 
         sendJSON(MockMvcRequestBuilders.post("/api/v1/orders")
@@ -101,7 +101,7 @@ class RegisterOrderControllerTest extends RequestSender {
     @MethodSource("provideCountryAndState")
     void shouldRegisterOrder(String country, String state) throws Exception {
         OrderAddressCommand address = new OrderAddressCommand("R. Monaco", "NONE", "Monte Carlo", "29303930", countryRepository.findByName(country).map(GenericEntity::getId).orElse(null), state);
-        CellPhoneCommand cellphone = new CellPhoneCommand("034", "23348575");
+        CellPhoneCommand cellphone = new CellPhoneCommand(34, "23348575");
         RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone);
 
         sendJSON(MockMvcRequestBuilders.post("/api/v1/orders")
