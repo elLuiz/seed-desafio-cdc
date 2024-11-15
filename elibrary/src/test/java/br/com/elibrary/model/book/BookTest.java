@@ -2,6 +2,7 @@ package br.com.elibrary.model.book;
 
 import br.com.elibrary.model.author.Author;
 import br.com.elibrary.model.category.Category;
+import br.com.elibrary.model.common.Money;
 import br.com.elibrary.model.exception.DomainValidationException;
 import br.com.elibrary.model.validation.FieldError;
 import org.junit.jupiter.api.Assertions;

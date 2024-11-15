@@ -2,7 +2,7 @@ package br.com.elibrary.application.dto.response.book;
 
 import br.com.elibrary.application.dto.response.author.AuthorDetails;
 import br.com.elibrary.model.book.Book;
-import br.com.elibrary.model.book.Money;
+import br.com.elibrary.model.common.Money;
 import lombok.Getter;
 import org.springframework.util.Assert;
 
