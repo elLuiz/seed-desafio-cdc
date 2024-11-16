@@ -12,7 +12,6 @@ import br.com.elibrary.service.order.command.OrderDetailsCommand;
 import br.com.elibrary.service.order.command.OrderItemCommand;
 import br.com.elibrary.service.order.command.RegisterOrderCommand;
 import org.hamcrest.Matchers;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,7 +24,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -168,7 +166,7 @@ class RegisterOrderControllerTest extends RequestSender {
         Arguments orderWithNegativeTotalAndQuantity = Arguments.of(BigDecimal.valueOf(-221.0), List.of(new RegisterBookByISBNCommand("209-394030", -1)), List.of("total.must.be.positive", "order.does.not.match.total", "quantity.must.be.positive"));
         Arguments orderWithNullBookId = Arguments.of(BigDecimal.valueOf(20.0), List.of(new RegisterBookByISBNCommand(null, 10)), List.of("bookId.must.not.be.null"));
         Arguments orderWithUnpublishedBook = Arguments.of(BigDecimal.valueOf(121.50), List.of(new RegisterBookByISBNCommand("109-394030", 1)), List.of("book.not.available.yet"));
-        Arguments orderWithoutItems = Arguments.of(BigDecimal.valueOf(121.50), null, List.of("items.must.not.be.empty"));
+        Arguments orderWithoutItems = Arguments.of(BigDecimal.valueOf(121.50), null, List.of("items.must.not.be.null", "items.must.not.be.empty"));
 
         return Stream.of(orderWithNullTotalAndBookDoesNotExistAndQuantityIsNull,
                 orderWithNonMatchingTotalAndInvalidQuantity,

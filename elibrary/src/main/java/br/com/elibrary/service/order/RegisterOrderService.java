@@ -9,6 +9,8 @@ import br.com.elibrary.service.country.CountryRepository;
 import br.com.elibrary.service.exception.EntityNotFound;
 import br.com.elibrary.service.order.command.RegisterOrderCommand;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RegisterOrderService {
@@ -18,6 +20,7 @@ public class RegisterOrderService {
         this.countryRepository = countryRepository;
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Order register(RegisterOrderCommand registerOrderCommand) {
         Country country = countryRepository.findById(registerOrderCommand.address().country()).orElseThrow(() -> new EntityNotFound("country.not.found", Country.class));
         State state = country.getStateOrElse(registerOrderCommand.address().state(), () -> new DomainException("state.does.not.belong.to.country")).orElse(null);

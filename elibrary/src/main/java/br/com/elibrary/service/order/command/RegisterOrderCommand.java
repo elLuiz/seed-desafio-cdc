@@ -28,10 +28,6 @@ public record RegisterOrderCommand(
     @NotNull(message = "order.details.must.not.be.null") @Valid OrderDetailsCommand orderDetails) {
 
     public boolean matchesTotal(List<Book> books) {
-        if (books == null || books.isEmpty()) {
-            return false;
-        }
-
         Map<Long, Money> bookIdToPrice = books.stream().collect(Collectors.toMap(Book::getId, Book::getPrice));
         Money total = orderDetails.items().stream()
                 .map(bookItem -> {
