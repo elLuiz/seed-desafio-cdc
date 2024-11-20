@@ -37,7 +37,7 @@ public class Money {
      * @param decimalPlaces The number of places after the conversion.
      * @return A {@link BigDecimal} with the specified decimal places.
      */
-    public static BigDecimal convert(Money money, int decimalPlaces) {
+    public static BigDecimal round(Money money, int decimalPlaces) {
        return money.amount.setScale(decimalPlaces, RoundingMode.HALF_UP);
     }
 

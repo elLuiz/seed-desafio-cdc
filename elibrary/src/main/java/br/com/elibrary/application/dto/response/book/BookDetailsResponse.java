@@ -28,7 +28,7 @@ public class BookDetailsResponse {
         bookDetailsResponse.title = book.getTitle();
         bookDetailsResponse.summary = book.getSummary();
         bookDetailsResponse.tableOfContents = book.getTableOfContents();
-        bookDetailsResponse.price = Money.convert(book.getPrice(), 2);
+        bookDetailsResponse.price = Money.round(book.getPrice(), 2);
         bookDetailsResponse.isbn = book.getIsbn();
         bookDetailsResponse.pages = book.getNumberOfPages();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/yyyy");
