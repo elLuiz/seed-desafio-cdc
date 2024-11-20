@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 @DiscriminatorValue("cpf")
 public class CPF extends Document {
     CPF(String value) {
-        super(value);
+        super(value, "cpf");
     }
 
     /**

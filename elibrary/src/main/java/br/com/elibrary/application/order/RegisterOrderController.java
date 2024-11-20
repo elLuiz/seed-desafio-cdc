@@ -1,11 +1,12 @@
 package br.com.elibrary.application.order;
 
+import br.com.elibrary.application.dto.response.order.OrderResponse;
+import br.com.elibrary.application.util.HttpHeaderUtil;
 import br.com.elibrary.model.order.Order;
 import br.com.elibrary.service.order.OrderDetailsValidator;
 import br.com.elibrary.service.order.RegisterOrderService;
 import br.com.elibrary.service.order.command.RegisterOrderCommand;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
@@ -35,6 +36,6 @@ public class RegisterOrderController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Object> create(@RequestBody @Valid RegisterOrderCommand orderRequest) {
         Order order = registerOrderService.register(orderRequest);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.created(HttpHeaderUtil.getLocationURI("/{id}", order.getId())).body(OrderResponse.toResponse(order));
     }
 }

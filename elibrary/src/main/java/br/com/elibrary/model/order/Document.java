@@ -2,7 +2,6 @@ package br.com.elibrary.model.order;
 
 import br.com.elibrary.model.exception.DomainException;
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Embeddable;
 
 import java.util.Objects;
@@ -12,15 +11,21 @@ import java.util.Objects;
  * Class responsible for managing CPF (A brazilian document for citizens).
  */
 @Embeddable
-@DiscriminatorColumn(name = "type")
-public abstract class Document {
-    @Column(name = "document")
+public class Document {
+    @Column(name = "document_value", nullable = false)
     protected String value;
+    @Column(name = "type", nullable = false)
+    private String type;
 
-    private Document() {}
+    protected Document() {}
 
     protected Document(String value) {
         this.value = value;
+    }
+
+    public Document(String value, String type) {
+        this.value = value;
+        this.type = type;
     }
 
     public static Document create(String value) {
@@ -40,7 +45,13 @@ public abstract class Document {
                 !value.matches("\\d{11,14}");
     }
 
-    public abstract String format();
+    public String format() {
+        if ("cpf".equals(type)) {
+            return ((CPF) this).format();
+        } else {
+            return ((CNPJ) this).format();
+        }
+    }
 
     @Override
     public boolean equals(Object o) {

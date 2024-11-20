@@ -35,11 +35,11 @@ public class OrderItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderItem that = (OrderItem) o;
-        return Objects.equals(bookId, that.bookId) && Objects.equals(quantity, that.quantity);
+        return Objects.equals(bookId, that.bookId) && Objects.equals(quantity, that.quantity) && Objects.equals(bookPrice, that.bookPrice);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(bookId, quantity);
+        return Objects.hash(bookId, quantity, bookPrice);
     }
 }

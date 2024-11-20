@@ -1,6 +1,5 @@
 package br.com.elibrary.model.order;
 
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Embeddable;
 
 import java.util.regex.Matcher;
@@ -10,10 +9,9 @@ import java.util.regex.Pattern;
  * Class responsible for managing CNPJ (A brazilian document for enterprises).
  */
 @Embeddable
-@DiscriminatorValue("cnpj")
 public class CNPJ extends Document {
     CNPJ(String value) {
-        super(value);
+        super(value, "cnpj");
     }
 
     /**

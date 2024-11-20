@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 @IntegrationTest
@@ -121,7 +122,15 @@ class RegisterOrderControllerTest extends RequestSender {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(orderCommand)))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.header().exists("Location"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.addressInfo").value("R. Monaco"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.complement").value("NONE"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.city").value("Monte Carlo"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.zipCode").value("29303930"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.country", Matchers.equalToIgnoringCase(country)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.state").value(state))
+                .andDo(MockMvcResultHandlers.print());
     }
 
     static Stream<Arguments> provideCountryAndState() {
