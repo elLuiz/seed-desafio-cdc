@@ -1,4 +1,4 @@
-package br.com.elibrary.model.book;
+package br.com.elibrary.model.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -16,11 +16,19 @@ public class Money {
     }
 
     public Money(BigDecimal amount) {
-        this.amount = amount;
+        this.amount = amount.setScale(6, RoundingMode.HALF_UP);
     }
 
     public boolean greaterThan(Money money) {
         return this.amount.compareTo(money.amount) > 0;
+    }
+
+    public Money add(Money money) {
+        return new Money(this.amount.add(money.amount));
+    }
+
+    public Money multiply(int quantity) {
+        return new Money(this.amount.multiply(BigDecimal.valueOf(quantity)));
     }
 
     /**
@@ -29,7 +37,7 @@ public class Money {
      * @param decimalPlaces The number of places after the conversion.
      * @return A {@link BigDecimal} with the specified decimal places.
      */
-    public static BigDecimal convert(Money money, int decimalPlaces) {
+    public static BigDecimal round(Money money, int decimalPlaces) {
        return money.amount.setScale(decimalPlaces, RoundingMode.HALF_UP);
     }
 

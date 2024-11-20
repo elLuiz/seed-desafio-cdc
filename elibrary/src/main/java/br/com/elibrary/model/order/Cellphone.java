@@ -11,10 +11,10 @@ import java.util.regex.Pattern;
 public class Cellphone {
     private static final String PHONE_FORMAT = "(\\d)?(\\d{4})(\\d{4})";
 
-    @Column(name = "code")
+    @Column(name = "phone_area_code", nullable = false)
     private int code;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
     private Cellphone() {}

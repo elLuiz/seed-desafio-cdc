@@ -3,6 +3,7 @@ package br.com.elibrary.model.book;
 import br.com.elibrary.model.GenericEntity;
 import br.com.elibrary.model.author.Author;
 import br.com.elibrary.model.category.Category;
+import br.com.elibrary.model.common.Money;
 import br.com.elibrary.model.exception.DomainValidationException;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -72,6 +73,10 @@ public class Book extends GenericEntity {
         } else {
             throw new DomainValidationException("bad.input.for.book", bookValidator.getError());
         }
+    }
+
+    public boolean isPublished() {
+        return this.publishAt != null && LocalDateTime.now().isAfter(this.publishAt);
     }
 
     @Getter

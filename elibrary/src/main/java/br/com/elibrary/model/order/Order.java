@@ -1,23 +1,32 @@
 package br.com.elibrary.model.order;
 
 import br.com.elibrary.model.GenericEntity;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
+
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_order")
 public class Order extends GenericEntity {
     @Email
-    @Column(name = "column", nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "costumer_first_name", nullable = false)
+    @Column(name = "customer_first_name", nullable = false)
     private String customerFirstName;
 
-    @Column(name = "costumer_last_name", nullable = false)
+    @Column(name = "customer_last_name", nullable = false)
     private String customerLastName;
 
     @Embedded
@@ -29,7 +38,35 @@ public class Order extends GenericEntity {
     @Embedded
     private Cellphone cellphone;
 
+    @ElementCollection
+    @CollectionTable(name = "tb_order_item", joinColumns = {@JoinColumn(name = "fk_order_id", foreignKey = @ForeignKey(name = "fk_order_id"))})
+    private Set<OrderItem> orderItems;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_status", nullable = false)
+    private OrderStatus orderStatus = OrderStatus.PENDING;
+
     Order() {}
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public Cellphone getCellphone() {
+        return cellphone;
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public Set<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
+    }
 
     public static OrderBuilder builder() {
         return new OrderBuilder();
@@ -68,10 +105,25 @@ public class Order extends GenericEntity {
             return this;
         }
 
+        public OrderBuilder items(Set<OrderItem> items) {
+            order.orderItems = items;
+            return this;
+        }
+
         public Order build() {
             return this.order;
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return !super.equals(o);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode());
+    }
 }

@@ -1,6 +1,7 @@
 package br.com.elibrary.model.book;
 
 import br.com.elibrary.model.book.Book.BookBuilder;
+import br.com.elibrary.model.common.Money;
 import br.com.elibrary.model.validation.Error;
 import br.com.elibrary.model.validation.FieldError;
 import br.com.elibrary.model.validation.Validator;
