@@ -19,6 +19,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -111,11 +112,11 @@ class RegisterOrderControllerTest extends RequestSender {
     }
 
     @ParameterizedTest(name = "#{index} - Should register Order with country={0} and state={1}")
-    @MethodSource("provideCountryAndState")
-    void shouldRegisterOrder(String country, String state) throws Exception {
+    @MethodSource("provideCountryAndStateAndCoupon")
+    void shouldRegisterOrder(String country, String state, String code) throws Exception {
         OrderAddressCommand address = new OrderAddressCommand("R. Monaco", "NONE", "Monte Carlo", "29303930", countryRepository.findByName(country).map(GenericEntity::getId).orElse(null), state);
         CellPhoneCommand cellphone = new CellPhoneCommand(34, "23348575");
-        RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone, orderDetailsCommand, "JUNIT25");
+        RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone, orderDetailsCommand, code);
 
         sendJSON(MockMvcRequestBuilders.post("/api/v1/orders")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -132,10 +133,10 @@ class RegisterOrderControllerTest extends RequestSender {
                 .andDo(MockMvcResultHandlers.print());
     }
 
-    static Stream<Arguments> provideCountryAndState() {
+    static Stream<Arguments> provideCountryAndStateAndCoupon() {
         return Stream.of(
-                Arguments.of("Deutschland", "Berlin"),
-                Arguments.of("bosnia", null)
+                Arguments.of("Deutschland", "Berlin", "JUNIT25"),
+                Arguments.of("bosnia", null, null)
         );
     }
 
@@ -184,18 +185,26 @@ class RegisterOrderControllerTest extends RequestSender {
                 orderWithoutItems);
     }
 
-    @Test
-    void shouldNotRegisterOrderWithExpiredCoupon() throws Exception {
+    @ParameterizedTest(name = "Should fail when coupon #{index} is invalid")
+    @MethodSource("provideInvalidCoupons")
+    void shouldNotRegisterOrderWithInvalidCoupon(String coupon, String expectedCode, HttpStatus expectedStatus) throws Exception {
         OrderAddressCommand address = new OrderAddressCommand("R. Monaco", "NONE", "Monte Carlo", "29303930", countryRepository.findByName("deutschland").map(GenericEntity::getId).orElse(null), "Berlin");
         CellPhoneCommand cellphone = new CellPhoneCommand(34, "23348575");
-        RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone, orderDetailsCommand, "FIRSTORDER20");
+        RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone, orderDetailsCommand, coupon);
 
         sendJSON(MockMvcRequestBuilders.post("/api/v1/orders")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(orderCommand)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].code", Matchers.containsInAnyOrder("coupon.has.expired")))
+                .andExpect(MockMvcResultMatchers.status().is(expectedStatus.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].code", Matchers.containsInAnyOrder(expectedCode)))
                 .andDo(MockMvcResultHandlers.print());
+    }
+
+    static Stream<Arguments> provideInvalidCoupons() throws Exception {
+        return Stream.of(
+                Arguments.of("NOTFOUND", "coupon.code.not.found", HttpStatus.NOT_FOUND),
+                Arguments.of("FIRSTORDER20", "coupon.has.expired", HttpStatus.BAD_REQUEST)
+        );
     }
 }
