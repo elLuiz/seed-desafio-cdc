@@ -58,10 +58,22 @@ Junto aos dados da compra, o cliente deve informar quais são os produtos que el
   - A quantidade não deve ultrapassar 20.
 - Total:
   - O total deve ser igual a soma da relação entre livros e quantidades.
+  - 
 #### Resultado esperado
 A compra deve ser registrada com o status **REALIZADA**.
 
 Caso alguma dessas regras sejam violadas, o sistema deve informar o usuário sobre o ocorrido.
+### RF 3: Aplicação de cupom
+Ao finalizar uma compra, o usuário pode aplicar um cupom de desconto. Uma vez aplicado, o desconto será aplicado sobre o valor final da compra.
+#### Restrições
+- O código do cupom deve existir;
+- O cupom não deve estar expirado;
+- O usuário pode aplicar apenas **um** cupom a sua compra.
+
+#### Resultado esperado
+O cupom deve ser atrelado a compra e o desconto dele deve ser aplicado ao valor final da compra.
+
+Caso alguma restrição seja ferida, o usuário deve ser informado sobre o erro ocorrido.
 
 ## Requisitos Não Funcionais
 
@@ -89,3 +101,6 @@ Além disso, o servidor deve enviar no header `Location` a URI para verificar o 
 
 ### RNF 4: Persistência
 Os dados de uma compra devem ser persistidos em um banco de dados relacional.
+
+### RNF 5: Comparação de datas
+As datas devem ser comparadas utilizando a timezone (fuso horário) `UTC`.

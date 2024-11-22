@@ -1,6 +1,8 @@
 package br.com.elibrary.model.order;
 
 import br.com.elibrary.model.GenericEntity;
+import br.com.elibrary.model.coupon.Coupon;
+import br.com.elibrary.model.exception.DomainException;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -8,8 +10,10 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 
@@ -46,6 +50,10 @@ public class Order extends GenericEntity {
     @Column(name = "order_status", nullable = false)
     private OrderStatus orderStatus = OrderStatus.PENDING;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_coupon_id", foreignKey = @ForeignKey(name = "fk_coupon_id"))
+    private Coupon coupon;
+
     Order() {}
 
     public Address getAddress() {
@@ -70,6 +78,21 @@ public class Order extends GenericEntity {
 
     public static OrderBuilder builder() {
         return new OrderBuilder();
+    }
+
+    /**
+     * Applies a discount coupon to an order, as long as the coupon is not expired nor nonexistent
+     * @param coupon The coupon object
+     * @throws DomainException if the coupon is expired or null.
+     */
+    public void applyCoupon(Coupon coupon) {
+        if (coupon == null) {
+            throw new DomainException("coupon.cannot.be.null");
+        }
+        if (coupon.isExpired()) {
+            throw new DomainException("coupon.has.expired");
+        }
+        this.coupon = coupon;
     }
 
     public static class OrderBuilder {
