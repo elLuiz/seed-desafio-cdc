@@ -1,13 +1,16 @@
 package br.com.elibrary.service.order;
 
+import br.com.elibrary.application.coupon.CouponRepository;
 import br.com.elibrary.model.country.Country;
 import br.com.elibrary.model.country.State;
+import br.com.elibrary.model.coupon.Coupon;
 import br.com.elibrary.model.exception.DomainException;
 import br.com.elibrary.model.order.Address;
 import br.com.elibrary.model.order.Order;
 import br.com.elibrary.service.country.CountryRepository;
 import br.com.elibrary.service.exception.EntityNotFound;
 import br.com.elibrary.service.order.command.RegisterOrderCommand;
+import br.com.elibrary.util.string.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +20,16 @@ public class RegisterOrderService {
     private final CountryRepository countryRepository;
     private final OrderItemMapper orderItemMapper;
     private final OrderRepository orderRepository;
+    private final CouponRepository couponRepository;
 
     public RegisterOrderService(CountryRepository countryRepository,
                                 OrderItemMapper orderItemMapper,
-                                OrderRepository orderRepository) {
+                                OrderRepository orderRepository,
+                                CouponRepository couponRepository) {
         this.countryRepository = countryRepository;
         this.orderItemMapper = orderItemMapper;
         this.orderRepository = orderRepository;
+        this.couponRepository = couponRepository;
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -46,6 +52,11 @@ public class RegisterOrderService {
                         .build())
                 .items(orderItemMapper.convert(registerOrderCommand))
                 .build();
+        if (StringUtils.isNotEmpty(registerOrderCommand.couponCode())) {
+            Coupon coupon = couponRepository.findByCode(registerOrderCommand.couponCode())
+                    .orElseThrow(() -> new EntityNotFound("coupon.code.not.found", Coupon.class));
+            order.applyCoupon(coupon);
+        }
         orderRepository.add(order);
         return order;
     }

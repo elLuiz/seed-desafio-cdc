@@ -8,6 +8,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Locale;
 import java.util.Objects;
@@ -25,10 +26,17 @@ public class Coupon extends GenericEntity {
     @Column(name = "expires_at", nullable = false)
     private OffsetDateTime expiresAt;
 
+    Coupon() {}
+
     public Coupon(String code, Integer discount, LocalDateTime expiresAt) {
         this.code = code.toUpperCase(Locale.US);
         this.discount = discount;
         this.expiresAt = expiresAt.withSecond(59).atOffset(ZoneOffset.UTC);
+    }
+
+    public boolean isExpired() {
+        return OffsetDateTime.now(ZoneId.of("UTC"))
+                .isAfter(this.expiresAt);
     }
 
     @Override

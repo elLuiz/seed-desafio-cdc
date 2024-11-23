@@ -19,6 +19,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -27,11 +28,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Stream;
 
 @IntegrationTest
-@Sql(scripts = {"/insert-countries.sql", "/insert-authors-and-categories.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = {"/insert-countries.sql", "/insert-authors-and-categories.sql", "/insert-coupons.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class RegisterOrderControllerTest extends RequestSender {
     @Autowired
     private CountryRepository countryRepository;
@@ -57,10 +57,10 @@ class RegisterOrderControllerTest extends RequestSender {
     }
 
     static Stream<Arguments> provideOrderWithInvalidArguments() {
-        RegisterOrderCommand orderWithEmptyFields = new RegisterOrderCommand("", null, "", "", null, null, orderDetailsCommand);
+        RegisterOrderCommand orderWithEmptyFields = new RegisterOrderCommand("", null, "", "", null, null, orderDetailsCommand, null);
         Arguments argumentsForEmptyFields = Arguments.of(orderWithEmptyFields, List.of("email.must.not.be.empty", "name.must.not.be.empty", "document.must.not.be.empty", "document.with.invalid.format", "last.name.must.not.be.empty", "address.must.not.be.null", "cellphone.must.not.be.null", "order.details.must.not.be.null"));
 
-        RegisterOrderCommand orderWithFieldViolations = new RegisterOrderCommand("2l3232", "name".repeat(100), "190".repeat(20), "lastName".repeat(60), null, null, orderDetailsCommand);
+        RegisterOrderCommand orderWithFieldViolations = new RegisterOrderCommand("2l3232", "name".repeat(100), "190".repeat(20), "lastName".repeat(60), null, null, orderDetailsCommand, null);
         Arguments argumentsForFieldViolations = Arguments.of(orderWithFieldViolations, List.of("email.must.be.valid", "name.surpasses.max.size", "document.with.invalid.format", "last.name.surpasses.max.size", "address.must.not.be.null", "cellphone.must.not.be.null", "order.details.must.not.be.null"));
 
         return Stream.of(
@@ -70,10 +70,10 @@ class RegisterOrderControllerTest extends RequestSender {
     }
 
     static Stream<Arguments> provideOrderWithInvalidAddress() {
-        RegisterOrderCommand orderWithEmptyAddressFields = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", new OrderAddressCommand("", "", "", null, null, ""), new CellPhoneCommand(23, "290393842"), orderDetailsCommand);
+        RegisterOrderCommand orderWithEmptyAddressFields = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", new OrderAddressCommand("", "", "", null, null, ""), new CellPhoneCommand(23, "290393842"), orderDetailsCommand, null);
         Arguments argumentsForEmptyFields = Arguments.of(orderWithEmptyAddressFields, List.of("address.must.not.be.empty", "complement.must.not.be.empty", "city.must.not.be.empty", "zip.code.must.not.be.empty", "country.must.not.be.null"));
 
-        RegisterOrderCommand orderWithFieldViolations = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", new OrderAddressCommand("12".repeat(102), "234".repeat(101), "323".repeat(151), "1".repeat(21), 1L, "123".repeat(51)), new CellPhoneCommand(23, "290393842"), orderDetailsCommand);
+        RegisterOrderCommand orderWithFieldViolations = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", new OrderAddressCommand("12".repeat(102), "234".repeat(101), "323".repeat(151), "1".repeat(21), 1L, "123".repeat(51)), new CellPhoneCommand(23, "290393842"), orderDetailsCommand, null);
         Arguments argumentsForFieldViolations =  Arguments.of(orderWithFieldViolations, List.of("address.surpasses.max.size", "complement.surpasses.max.size", "city.surpasses.max.size", "zip.code.surpasses.max.size", "state.surpasses.max.size"));
 
         return Stream.of(
@@ -84,10 +84,10 @@ class RegisterOrderControllerTest extends RequestSender {
 
     static Stream<Arguments> provideOrderWithInvalidPhoneNumber() {
         OrderAddressCommand address = new OrderAddressCommand("R. Monaco", "NONE", "Monte Carlo", "29303930", 1L, "MC");
-        RegisterOrderCommand orderWithEmptyCellphone = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, new CellPhoneCommand(null, ""), orderDetailsCommand);
+        RegisterOrderCommand orderWithEmptyCellphone = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, new CellPhoneCommand(null, ""), orderDetailsCommand, null);
         Arguments argumentForEmptyCellphone = Arguments.of(orderWithEmptyCellphone, List.of("code.must.not.be.null", "phone.number.must.not.be.null", "phone.with.invalid.format"));
 
-        RegisterOrderCommand orderWithInvalidPhone = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, new CellPhoneCommand(2322, "43432a2"), orderDetailsCommand);
+        RegisterOrderCommand orderWithInvalidPhone = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, new CellPhoneCommand(2322, "43432a2"), orderDetailsCommand, null);
         Arguments argumentForInvalidCellphone = Arguments.of(orderWithInvalidPhone, List.of("code.with.invalid.range", "phone.with.invalid.format"));
 
         return Stream.of(
@@ -100,7 +100,7 @@ class RegisterOrderControllerTest extends RequestSender {
     void shouldNotRegisterOrderWhenStateDoesNotBelongToCountry() throws Exception {
         OrderAddressCommand address = new OrderAddressCommand("R. Monaco", "NONE", "Monte Carlo", "29303930", countryRepository.findByName("deutschland").map(GenericEntity::getId).orElse(null), "Rio de Janeiro");
         CellPhoneCommand cellphone = new CellPhoneCommand(34, "23348575");
-        RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone, orderDetailsCommand);
+        RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone, orderDetailsCommand, null);
 
         sendJSON(MockMvcRequestBuilders.post("/api/v1/orders")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -112,11 +112,11 @@ class RegisterOrderControllerTest extends RequestSender {
     }
 
     @ParameterizedTest(name = "#{index} - Should register Order with country={0} and state={1}")
-    @MethodSource("provideCountryAndState")
-    void shouldRegisterOrder(String country, String state) throws Exception {
+    @MethodSource("provideCountryAndStateAndCoupon")
+    void shouldRegisterOrder(String country, String state, String code) throws Exception {
         OrderAddressCommand address = new OrderAddressCommand("R. Monaco", "NONE", "Monte Carlo", "29303930", countryRepository.findByName(country).map(GenericEntity::getId).orElse(null), state);
         CellPhoneCommand cellphone = new CellPhoneCommand(34, "23348575");
-        RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone, orderDetailsCommand);
+        RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone, orderDetailsCommand, code);
 
         sendJSON(MockMvcRequestBuilders.post("/api/v1/orders")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -133,10 +133,10 @@ class RegisterOrderControllerTest extends RequestSender {
                 .andDo(MockMvcResultHandlers.print());
     }
 
-    static Stream<Arguments> provideCountryAndState() {
+    static Stream<Arguments> provideCountryAndStateAndCoupon() {
         return Stream.of(
-                Arguments.of("Deutschland", "Berlin"),
-                Arguments.of("bosnia", null)
+                Arguments.of("Deutschland", "Berlin", "JUNIT25"),
+                Arguments.of("bosnia", null, null)
         );
     }
 
@@ -146,7 +146,7 @@ class RegisterOrderControllerTest extends RequestSender {
         OrderAddressCommand address = new OrderAddressCommand("R. Monaco", "NONE", "Monte Carlo", "29303930", countryRepository.findByName("Deutschland").map(GenericEntity::getId).orElse(null), "Berlin");
         CellPhoneCommand cellphone = new CellPhoneCommand(34, "23348575");
         OrderDetailsCommand orderDetails = new OrderDetailsCommand(total, getOrderItemCommands(bookByISBNCommands));
-        RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone, orderDetails);
+        RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone, orderDetails, null);
         sendJSON(MockMvcRequestBuilders.post("/api/v1/orders")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -183,5 +183,28 @@ class RegisterOrderControllerTest extends RequestSender {
                 orderWithNullBookId,
                 orderWithUnpublishedBook,
                 orderWithoutItems);
+    }
+
+    @ParameterizedTest(name = "Should fail when coupon #{index} is invalid")
+    @MethodSource("provideInvalidCoupons")
+    void shouldNotRegisterOrderWithInvalidCoupon(String coupon, String expectedCode, HttpStatus expectedStatus) throws Exception {
+        OrderAddressCommand address = new OrderAddressCommand("R. Monaco", "NONE", "Monte Carlo", "29303930", countryRepository.findByName("deutschland").map(GenericEntity::getId).orElse(null), "Berlin");
+        CellPhoneCommand cellphone = new CellPhoneCommand(34, "23348575");
+        RegisterOrderCommand orderCommand = new RegisterOrderCommand("email@valid.com", "Max", "22194292400", "Verstappen", address, cellphone, orderDetailsCommand, coupon);
+
+        sendJSON(MockMvcRequestBuilders.post("/api/v1/orders")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(orderCommand)))
+                .andExpect(MockMvcResultMatchers.status().is(expectedStatus.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[*].code", Matchers.containsInAnyOrder(expectedCode)))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    static Stream<Arguments> provideInvalidCoupons() throws Exception {
+        return Stream.of(
+                Arguments.of("NOTFOUND", "coupon.code.not.found", HttpStatus.NOT_FOUND),
+                Arguments.of("FIRSTORDER20", "coupon.has.expired", HttpStatus.BAD_REQUEST)
+        );
     }
 }
