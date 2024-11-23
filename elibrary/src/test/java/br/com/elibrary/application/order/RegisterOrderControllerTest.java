@@ -124,7 +124,7 @@ class RegisterOrderControllerTest extends RequestSender {
                 .content(objectMapper.writeValueAsString(orderCommand)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().exists("Location"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.addressInfo").value("R. Monaco"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.street").value("R. Monaco"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.complement").value("NONE"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.city").value("Monte Carlo"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.zipCode").value("29303930"))
