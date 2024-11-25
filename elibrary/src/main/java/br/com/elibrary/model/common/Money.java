@@ -35,17 +35,16 @@ public class Money {
         if (percentageAmount < 0 || percentageAmount > 100) {
             throw new IllegalArgumentException("Percentage %d is out of range".formatted(percentageAmount));
         }
-        return new Money(this.amount.subtract(this.amount.multiply(BigDecimal.valueOf(percentageAmount / 100))));
+        return new Money(this.amount.subtract(this.amount.multiply(BigDecimal.valueOf((double) percentageAmount / 100))));
     }
 
     /**
      * Converts a {@link Money} object into a {@link BigDecimal} representation.
-     * @param money The money object.
      * @param decimalPlaces The number of places after the conversion.
      * @return A {@link BigDecimal} with the specified decimal places.
      */
-    public static BigDecimal round(Money money, int decimalPlaces) {
-       return money.amount.setScale(decimalPlaces, RoundingMode.HALF_UP);
+    public BigDecimal round(int decimalPlaces) {
+       return this.amount.setScale(decimalPlaces, RoundingMode.HALF_UP);
     }
 
     public BigDecimal getAmount() {

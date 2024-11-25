@@ -1,7 +1,6 @@
 package br.com.elibrary.application.dto.response;
 
 import br.com.elibrary.application.dto.response.order.AddressResponse;
-import br.com.elibrary.model.common.Money;
 import br.com.elibrary.model.order.Order;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,8 +34,8 @@ public class OrderDetailsResponse {
         orderDetailsResponse.status = order.getOrderStatus().name();
         orderDetailsResponse.address = AddressResponse.toResponse(order);
         orderDetailsResponse.items = getItems(order);
-        orderDetailsResponse.coupon = OrderCouponResponse.convert(order.getCoupon());
-        orderDetailsResponse.orderTotal = order.total().getAmount();
+        orderDetailsResponse.coupon = OrderCouponResponse.convert(order.getCoupon()).orElse(null);
+        orderDetailsResponse.orderTotal = order.total().round(2);
         orderDetailsResponse.orderTotalWithDiscount = getTotalWithDiscount(order);
         return orderDetailsResponse;
     }
@@ -50,7 +49,7 @@ public class OrderDetailsResponse {
 
     private static @Nullable BigDecimal getTotalWithDiscount(Order order) {
         return order.totalWithDiscount()
-                .map(Money::getAmount)
+                .map(money -> money.round(2))
                 .orElse(null);
     }
 }

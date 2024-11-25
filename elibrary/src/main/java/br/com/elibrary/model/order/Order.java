@@ -100,9 +100,15 @@ public class Order extends GenericEntity {
     }
 
     public Money total() {
-        return this.orderItems.stream()
-                .map(OrderItem::getBookPrice)
-                .reduce(new Money(BigDecimal.ZERO), Money::add);
+        if (this.orderItems == null) {
+            return new Money(BigDecimal.ZERO);
+        }
+        Money total = new Money(BigDecimal.ZERO);
+        for (OrderItem orderItem : this.orderItems) {
+            Money subTotal = orderItem.getBookPrice().multiply(orderItem.getQuantity());
+            total = total.add(subTotal);
+        }
+        return total;
     }
 
     /**
