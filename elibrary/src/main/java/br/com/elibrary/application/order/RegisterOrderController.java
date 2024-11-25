@@ -1,6 +1,6 @@
 package br.com.elibrary.application.order;
 
-import br.com.elibrary.application.dto.response.order.OrderResponse;
+import br.com.elibrary.application.dto.response.order.AddressResponse;
 import br.com.elibrary.application.util.HttpHeaderUtil;
 import br.com.elibrary.model.order.Order;
 import br.com.elibrary.service.order.OrderDetailsValidator;
@@ -36,6 +36,6 @@ public class RegisterOrderController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Object> create(@RequestBody @Valid RegisterOrderCommand orderRequest) {
         Order order = registerOrderService.register(orderRequest);
-        return ResponseEntity.created(HttpHeaderUtil.getLocationURI("/{id}", order.getId())).body(OrderResponse.toResponse(order));
+        return ResponseEntity.created(HttpHeaderUtil.getLocationURI("/{id}", order.getId())).body(AddressResponse.toResponse(order));
     }
 }

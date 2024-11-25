@@ -1,6 +1,7 @@
 package br.com.elibrary.model.order;
 
 import br.com.elibrary.model.GenericEntity;
+import br.com.elibrary.model.common.Money;
 import br.com.elibrary.model.coupon.Coupon;
 import br.com.elibrary.model.exception.DomainException;
 import jakarta.persistence.CollectionTable;
@@ -17,7 +18,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 
+import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -56,6 +59,10 @@ public class Order extends GenericEntity {
 
     Order() {}
 
+    public String getCustomerFullName() {
+        return String.format("%s %s", customerFirstName, customerLastName);
+    }
+
     public Address getAddress() {
         return address;
     }
@@ -76,8 +83,32 @@ public class Order extends GenericEntity {
         return orderStatus;
     }
 
+    public Coupon getCoupon() {
+        return coupon;
+    }
+
     public static OrderBuilder builder() {
         return new OrderBuilder();
+    }
+
+    public Optional<Money> totalWithDiscount() {
+        if (coupon == null) {
+            return Optional.empty();
+        }
+        Money total = total();
+        return Optional.of(total.discount(coupon.getDiscount()));
+    }
+
+    public Money total() {
+        if (this.orderItems == null) {
+            return new Money(BigDecimal.ZERO);
+        }
+        Money total = new Money(BigDecimal.ZERO);
+        for (OrderItem orderItem : this.orderItems) {
+            Money subTotal = orderItem.getBookPrice().multiply(orderItem.getQuantity());
+            total = total.add(subTotal);
+        }
+        return total;
     }
 
     /**

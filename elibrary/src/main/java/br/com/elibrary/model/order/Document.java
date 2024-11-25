@@ -47,9 +47,9 @@ public class Document {
 
     public String format() {
         if ("cpf".equals(type)) {
-            return ((CPF) this).format();
+            return new CPF(value).format();
         } else {
-            return ((CNPJ) this).format();
+            return new CNPJ(value).format();
         }
     }
 

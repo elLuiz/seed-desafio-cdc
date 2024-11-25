@@ -21,7 +21,7 @@ class ListBooksControllerTest extends RequestSender {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/books")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[*].title").value(Matchers.contains("1984", "Building Microservices")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[*].title").value(Matchers.contains("1984", "Building Microservices", "Microservices")));
     }
 
 }
